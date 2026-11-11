@@ -683,6 +683,7 @@ async function initBio({ quiet = false } = {}) {
   }
   try {
     const data = await loadWeather(await locate());
+    applyTheme(); // Sonnenzeiten hängen vom (evtl. neuen) Standort ab
     renderBio({ ...buildBio(data), stamp: Date.now() });
     saveWeather(data);
     weatherLoadedAt = Date.now();
@@ -797,12 +798,12 @@ async function initFeeds() {
 
 const THEME_KEY = 'spiritual-light:theme';
 const THEMES = [
-  ['auto', 'Automatisch', 'Salbei, im Dunkelmodus des Handys Abend'],
+  ['auto', 'Automatisch', 'Nach Tageszeit: tagsüber Salbei, in der Dämmerung gedämpft, abends Abend'],
   ['hell', 'Hell', ''],
   ['salbei', 'Salbei', ''],
   ['abend', 'Abend', ''],
 ];
-const THEME_BAR = { hell: '#bcd6c3', salbei: '#a2c4ad', abend: '#1f2923' };
+const THEME_BAR = { hell: '#bcd6c3', salbei: '#a2c4ad', daemmerung: '#8fb39c', abend: '#1f2923' };
 const darkQuery = matchMedia('(prefers-color-scheme: dark)');
 
 function themePref() {
@@ -810,7 +811,8 @@ function themePref() {
 }
 
 function applyTheme(pref = themePref()) {
-  const t = pref === 'auto' ? (darkQuery.matches ? 'abend' : 'salbei') : pref;
+  const t = pref === 'auto' ? window.SL?.pickTheme?.() || 'salbei' : pref;
+  if ((document.documentElement.dataset.theme || 'hell') !== t) document.documentElement.classList.add('theme-fade');
   if (t === 'hell') delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = t;
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_BAR[t]);
@@ -902,6 +904,7 @@ const HOUR = 3600000;
 /** Hält die Inhalte frisch: neuer Tag = alles neu, Wetter stündlich, News und Bücher alle paar Stunden. */
 function refresh() {
   if (document.visibilityState !== 'visible') return;
+  applyTheme(); // Helligkeit folgt der Tageszeit
   if (renderedDay !== dayKey()) return start();
   renderHeader();
   if (Date.now() - weatherLoadedAt >= HOUR) initBio({ quiet: true });
