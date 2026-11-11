@@ -76,6 +76,29 @@
   --shadow: 0 10px 30px -18px rgba(40, 56, 44, 0.5);
 }
 
+/* Farbwelt „Dämmerung“: gedämpft, zwischen Salbei und Abend (rund um Sonnenauf- und -untergang) */
+:root[data-theme='daemmerung'] {
+  --cream: #8e9f87;
+  --paper: #c0c6ae;
+  --mint: #8fb39c;
+  --mint-deep: #779f87;
+  --sage: #677e5a;
+  --sage-soft: #93a383;
+  --sage-deep: #364e30;
+  --forest: #24352a;
+  --ink: #233028;
+  --muted: #3a463d;
+  --sand: #b19e78;
+  --line: rgba(36, 53, 42, 0.22);
+  --tip-from: #b9ad8f;
+  --bday-from: #c4ab8a;
+  --glass: rgba(192, 198, 174, 0.88);
+  --nav: rgba(192, 198, 174, 0.96);
+  --moon-dark: #aeb7a1;
+  --moon-lit: #364e30;
+  --shadow: 0 10px 30px -18px rgba(30, 44, 34, 0.55);
+}
+
 /* Farbwelt „Abend“: dunkler Waldgrund, helle Schrift – schont die Augen */
 :root[data-theme='abend'] {
   --cream: #1f2923;
@@ -467,7 +490,9 @@ button.pill-card { width: 100%; text-align: left; cursor: pointer; }
 }
 .theme-options button[aria-checked='true'] { border-color: var(--sage-deep); box-shadow: inset 0 0 0 1px var(--sage-deep); color: var(--forest); }
 .swatch { width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.12); }
-.swatch-auto { background: linear-gradient(135deg, #b9c6ad 50%, #1f2923 50%); }
+.swatch-auto { background: conic-gradient(from 200deg, #b9c6ad 0 33%, #8e9f87 0 66%, #1f2923 0); }
+/* sanfter Übergang, wenn die Farbwelt im laufenden Betrieb wechselt */
+.theme-fade body, .theme-fade .card, .theme-fade .tabs, .theme-fade .pill-card { transition: background-color 1.2s ease, color 1.2s ease, border-color 1.2s ease; }
 .swatch-hell { background: linear-gradient(135deg, #ebe5d6, #bcd6c3); }
 .swatch-salbei { background: linear-gradient(135deg, #d9dbc8, #86b096); }
 .swatch-abend { background: linear-gradient(135deg, #2b362f, #4b6b57); }
