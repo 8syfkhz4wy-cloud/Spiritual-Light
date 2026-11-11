@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Spiritual Light</title>
+  <meta name="description" content="Annetts täglicher Begleiter: Biowetter, Spruch und Tipp des Tages, spirituelle News und neue Bücher.">
+  <meta name="theme-color" content="#DDEFE3">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Spiritual Light">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preload" href="fonts/nunito-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/cormorant-garamond-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <svg class="sprig" viewBox="0 0 120 120" aria-hidden="true">
+        <path d="M14 112C40 92 62 62 74 16" />
+        <path d="M33 95c-12-3-19-11-21-22 12 1 21 8 24 18M46 79c-13-1-22-8-26-19 12-1 23 5 28 15M57 61c-12 1-22-5-27-15 12-3 23 1 29 10M65 43c-10 3-20-1-26-9 10-5 21-3 27 4M40 100c4-11 13-17 25-18-1 12-9 20-20 21M53 84c2-12 10-19 22-22 1 12-6 21-17 25M63 66c0-12 7-20 18-24 3 11-2 21-13 27M70 48c-2-10 3-19 12-24 5 10 2 20-7 26" />
+      </svg>
+      <p class="top-date" id="today-date"></p>
+      <h1 class="top-title" id="greeting">Spiritual Light</h1>
+    </header>
+
+    <main>
+      <!-- Heute -->
+      <section class="view is-active" id="view-heute" aria-labelledby="tab-heute">
+        <article class="quote-card" id="quote"></article>
+        <div id="weather-strip"></div>
+        <div id="home-bio"></div>
+        <article class="card tip-card" id="tip"></article>
+        <div id="home-teasers"></div>
+      </section>
+
+      <!-- Biowetter -->
+      <section class="view" id="view-bio" aria-labelledby="tab-bio" hidden>
+        <h2 class="view-title">Biowetter</h2>
+        <p class="view-sub">Jena · heute</p>
+        <div id="bio"></div>
+      </section>
+
+      <!-- News -->
+      <section class="view" id="view-news" aria-labelledby="tab-news" hidden>
+        <h2 class="view-title">News</h2>
+        <p class="view-sub">Aus der spirituellen Szene</p>
+        <div class="segment" role="tablist" aria-label="Region wählen">
+          <button role="tab" class="is-active" data-region="germany" aria-selected="true">Deutschland</button>
+          <button role="tab" data-region="jena" aria-selected="false">Jena &amp; Thüringen</button>
+        </div>
+        <div id="news"></div>
+      </section>
+
+      <!-- Bücher -->
+      <section class="view" id="view-buecher" aria-labelledby="tab-buecher" hidden>
+        <h2 class="view-title">Neue Bücher</h2>
+        <p class="view-sub">Frisch erschienen: Spiritualität, Esoterik &amp; Achtsamkeit</p>
+        <div id="books"></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="tabs" aria-label="Rubriken">
+    <button id="tab-heute" class="is-active" data-view="heute" aria-current="page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.500 12H21M5.6 5.6l1.8 1.8M16.600 16.600l1.800 1.800M5.6 18.400l1.800-1.800M16.600 7.400l1.800-1.800"/></svg>
+      <span>Heute</span>
+    </button>
+    <button id="tab-bio" data-view="bio">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-14 14z"/><path d="M5 19c3-4 6-7 10-9.500"/></svg>
+      <span>Biowetter</span>
+    </button>
+    <button id="tab-news" data-view="news">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h11v14H7a2 2 0 0 1-2-2z"/><path d="M16 9h3v8a2 2 0 0 1-2 2M8 9h5M8 12.500h5M8 16h3"/></svg>
+      <span>News</span>
+    </button>
+    <button id="tab-buecher" data-view="buecher">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.500C10 5 7.500 4.500 4 4.500v13c3.500 0 6 .5 8 2 2-1.500 4.500-2 8-2v-13c-3.500 0-6 .5-8 2zM12 6.500v13"/></svg>
+      <span>Bücher</span>
+    </button>
+  </nav>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

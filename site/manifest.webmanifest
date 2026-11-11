@@ -1,0 +1,18 @@
+{
+  "name": "Spiritual Light",
+  "short_name": "Spiritual Light",
+  "description": "Annetts täglicher Begleiter: Biowetter, Spruch und Tipp des Tages, spirituelle News und neue Bücher.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f7f4ec",
+  "theme_color": "#ddefe3",
+  "categories": ["lifestyle", "health"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
