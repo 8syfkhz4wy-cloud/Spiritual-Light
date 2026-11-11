@@ -217,6 +217,26 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round
 .tip-card { background: linear-gradient(165deg, #f1e9d7, var(--paper)); border-color: rgba(207, 154, 128, 0.25); }
 .tip-card h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--forest); margin: 8px 0 6px; line-height: 1.15; }
 .tip-card p { font-size: 0.97rem; }
+
+/* ---------- Gericht des Tages ---------- */
+
+.dish-card { background: linear-gradient(165deg, var(--sage-soft), var(--paper) 75%); }
+.dish-card h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--forest); margin: 8px 0 6px; line-height: 1.15; }
+.dish-meaning { font-size: 0.97rem; }
+.dish-meta { font-size: 0.82rem; font-weight: 700; color: var(--sage-deep); margin-top: 10px; }
+.recipe { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 4px; }
+.recipe summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 0; font-size: 0.9rem; font-weight: 800; color: var(--sage-deep);
+}
+.recipe summary::-webkit-details-marker { display: none; }
+.recipe summary::after { content: '›'; font-size: 1.2rem; line-height: 1; transition: transform 0.2s; }
+.recipe[open] summary::after { transform: rotate(90deg); }
+.recipe[open] summary { color: var(--forest); }
+.recipe-body h4 { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sage-deep); margin: 6px 0 6px; }
+.recipe-body ul, .recipe-body ol { margin: 0 0 12px; padding-left: 1.25rem; font-size: 0.93rem; }
+.recipe-body li { margin-bottom: 4px; }
+.recipe-body li::marker { color: var(--sage); font-weight: 700; }
 .tag {
   display: inline-block; margin-left: 8px; padding: 3px 10px; border-radius: 999px;
   background: var(--sand); color: #8a6a55; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;

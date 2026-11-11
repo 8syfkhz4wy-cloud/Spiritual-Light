@@ -1,4 +1,4 @@
-import { QUOTES, TIPS } from './content.js';
+import { QUOTES, TIPS, DISHES } from './content.js';
 
 const NAME = 'Annett';
 const PLACE = { name: 'Jena', lat: 50.927, lon: 11.586 };
@@ -92,6 +92,24 @@ function renderQuote() {
       h('button', { class: 'share', onclick: () => navigator.share(shareData).catch(() => {}) },
         h('span', { html: svg(ICONS.share) }), 'Teilen'),
   ].filter(Boolean));
+}
+
+function renderDish() {
+  const d = DISHES[(dayNumber() * 11 + 5) % DISHES.length];
+  const details = h('details', { class: 'recipe' },
+    h('summary', {}, 'Rezept anzeigen'),
+    h('div', { class: 'recipe-body' },
+      h('h4', {}, 'Zutaten'),
+      h('ul', {}, d.ingredients.map((i) => h('li', {}, i))),
+      h('h4', {}, 'Zubereitung'),
+      h('ol', {}, d.steps.map((s) => h('li', {}, s)))));
+  $('#dish').replaceChildren(
+    h('div', {}, h('span', { class: 'eyebrow' }, 'Gericht des Tages'), h('span', { class: 'tag' }, d.topic)),
+    h('h3', {}, d.title),
+    h('p', { class: 'dish-meaning' }, d.meaning),
+    h('p', { class: 'dish-meta' }, `${d.time} · ${d.servings} ${d.servings === 1 ? 'Portion' : 'Portionen'}`),
+    details,
+  );
 }
 
 function renderTip() {
@@ -553,6 +571,7 @@ function start() {
   renderHeader();
   renderQuote();
   renderTip();
+  renderDish();
   initBio();
   initFeeds();
 }
