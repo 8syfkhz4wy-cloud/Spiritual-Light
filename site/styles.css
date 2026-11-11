@@ -20,17 +20,17 @@
 }
 
 :root {
-  --cream: #f7f4ec;
-  --paper: #fffdf8;
-  --mint: #ddefe3;
-  --mint-deep: #c4e2d1;
+  --cream: #ebe6d9;
+  --paper: #f7f3e8;
+  --mint: #cce3d4;
+  --mint-deep: #b1d3bf;
   --sage: #9caf88;
-  --sage-soft: #e6ecdc;
+  --sage-soft: #d5dec8;
   --sage-deep: #6b8262;
   --forest: #3f5144;
   --ink: #36443a;
   --muted: #76857a;
-  --sand: #ece2cf;
+  --sand: #e0d3ba;
   --clay: #cf9a80;
   --line: rgba(107, 130, 98, 0.16);
   --lvl-0: #9caf88;
@@ -148,7 +148,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round
 .quote-author { font-size: 0.86rem; font-weight: 700; color: var(--sage-deep); letter-spacing: 0.04em; }
 .share {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 16px;
-  padding: 9px 16px; border-radius: 999px; background: rgba(255, 253, 248, 0.75);
+  padding: 9px 16px; border-radius: 999px; background: rgba(247, 243, 232, 0.75);
   font-size: 0.82rem; font-weight: 700; color: var(--sage-deep);
   position: relative;
 }
@@ -214,7 +214,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round
 
 /* ---------- Tipp ---------- */
 
-.tip-card { background: linear-gradient(165deg, #fbf6ea, var(--paper)); border-color: rgba(207, 154, 128, 0.25); }
+.tip-card { background: linear-gradient(165deg, #f1e9d7, var(--paper)); border-color: rgba(207, 154, 128, 0.25); }
 .tip-card h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--forest); margin: 8px 0 6px; line-height: 1.15; }
 .tip-card p { font-size: 0.97rem; }
 .tag {
@@ -272,7 +272,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round
   bottom: calc(env(safe-area-inset-bottom) + 12px);
   width: min(calc(100% - 24px), 496px);
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 6px;
-  background: rgba(255, 253, 248, 0.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: rgba(247, 243, 232, 0.92); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--line); border-radius: 28px;
   box-shadow: 0 16px 34px -18px rgba(63, 81, 68, 0.55);
   z-index: 10;
