@@ -195,3 +195,26 @@ export const DISHES = [
     ingredients: ['Gemüse, das du da hast (Lauch, Möhren, Sellerie, Kartoffeln)', '1 Zwiebel', '1 l Gemüsebrühe', '1 Lorbeerblatt', 'Frische Petersilie', 'Salz, Pfeffer'],
     steps: ['Gemüse putzen und würfeln – dabei jedem Teil innerlich danken.', 'Zwiebel anschwitzen, Gemüse und Brühe mit Lorbeer zugeben, 25 Minuten köcheln.', 'Mit Petersilie bestreuen und gemeinsam oder in Ruhe genießen.'] },
 ];
+
+// Annetts Geburtstag: am 13. November zeigt die App jedes Jahr einen eigenen Geburtstagstag.
+export const BIRTHDAY = {
+  month: 11,
+  day: 13,
+  title: 'Alles Liebe zum Geburtstag, liebe Annett!',
+  blessing:
+    'Heute feiert das Leben dich. Möge dein neues Lebensjahr voller Licht sein, voller leiser Wunder und Begegnungen, die dein Herz wärmen. Möge dich Gesundheit tragen, Freude begleiten und deine innere Stimme sicher führen. Du bist ein Geschenk – genau so, wie du bist.',
+  sign: 'Als Skorpion-Seele trägst du Tiefe, Intuition und die Kraft der Wandlung in dir. Im Herbst geboren, weißt du: Aus dem Loslassen wächst das Neue.',
+  quote: { text: 'Und jedem Anfang wohnt ein Zauber inne, der uns beschützt und der uns hilft, zu leben.', author: 'Hermann Hesse' },
+  tip: {
+    topic: 'Geburtstagsritual',
+    title: 'Drei Samen für dein neues Jahr',
+    text: 'Zünde heute eine Kerze an und schreibe drei Wünsche für dein neues Lebensjahr auf einen Zettel – so, als wären sie schon wahr. Falte ihn und lege ihn an einen besonderen Ort. Am nächsten Geburtstag liest du ihn wieder.',
+  },
+  dish: {
+    topic: 'Geburtstag', title: 'Herzens-Schokokuchen mit Rosenblüten',
+    meaning: 'Kakao öffnet das Herz, Rosen stehen für die Liebe. Ein Kuchen, der dich feiert – teile ihn mit Menschen, die dir guttun.',
+    time: '20 Min. + 30 Min. Backen', servings: 8,
+    ingredients: ['200 g dunkle Schokolade (70 %)', '150 g Butter', '4 Eier', '120 g Zucker', '60 g gemahlene Mandeln', '40 g Mehl', '1 Prise Salz', '1 TL Rosenwasser (nach Belieben)', 'Zum Garnieren: Himbeeren, Puderzucker, getrocknete Rosenblüten'],
+    steps: ['Schokolade und Butter über dem Wasserbad schmelzen. Ofen auf 180 °C vorheizen.', 'Eier mit Zucker schaumig schlagen, Schokoladenmasse, Mandeln, Mehl, Salz und Rosenwasser unterheben.', 'In eine gefettete Springform (24 cm) füllen und 25–30 Minuten backen – innen darf er saftig bleiben.', 'Abkühlen lassen, mit Puderzucker, Himbeeren und Rosenblüten schmücken. Kerze drauf und Wünsche aussprechen!'],
+  },
+};

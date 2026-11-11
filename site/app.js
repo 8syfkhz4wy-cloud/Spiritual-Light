@@ -1,4 +1,4 @@
-import { QUOTES, TIPS, DISHES } from './content.js';
+import { QUOTES, TIPS, DISHES, BIRTHDAY } from './content.js';
 
 const NAME = 'Annett';
 // Heimatort: gilt, solange kein Standort freigegeben ist
@@ -87,16 +87,68 @@ async function getJson(url, tries = 3) {
 
 // ---------- Kopf, Spruch, Tipp ----------
 
+const isBirthday = (d = new Date()) => d.getMonth() + 1 === BIRTHDAY.month && d.getDate() === BIRTHDAY.day;
+
 function renderHeader() {
   const now = new Date();
   const hour = now.getHours();
   const hello = hour < 5 ? 'Gute Nacht' : hour < 11 ? 'Guten Morgen' : hour < 18 ? 'Schönen Tag' : 'Guten Abend';
-  $('#greeting').textContent = `${hello}, ${NAME}`;
-  $('#today-date').textContent = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+  const date = now.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+  $('#greeting').textContent = isBirthday(now) ? `Alles Liebe, ${NAME}` : `${hello}, ${NAME}`;
+  $('#today-date').textContent = isBirthday(now) ? `${date} · Dein Geburtstag` : date;
+}
+
+// ---------- Geburtstag ----------
+
+function renderBirthday() {
+  const box = $('#birthday');
+  const today = isBirthday();
+  box.hidden = !today;
+  document.body.classList.toggle('is-birthday', today);
+  if (!today) return box.replaceChildren();
+
+  const note = h('p', { class: 'wish-note' }, 'Schließ kurz die Augen, denk an deinen Herzenswunsch – und zünde die Kerze an.');
+  const candle = h('span', { class: 'candle', 'aria-hidden': 'true', html:
+    '<svg viewBox="0 0 60 90"><g class="flame"><path d="M30 6c7 10 9 15 9 20a9 9 0 0 1-18 0c0-5 2-10 9-20z" fill="#e9b07a"/><path d="M30 16c3.5 5 4.500 8 4.500 10.500a4.500 4.500 0 0 1-9 0c0-2.500 1-5.500 4.500-10.500z" fill="#f8e2b8"/></g>' +
+    '<path d="M30 30v8" stroke="#3f5144" stroke-width="2" stroke-linecap="round"/><rect x="20" y="38" width="20" height="44" rx="5" fill="#fffaf0" stroke="#c9b9a0" stroke-width="1.5"/>' +
+    '<path d="M20 52c7 4 13-4 20 0M20 66c7 4 13-4 20 0" fill="none" stroke="#d9a58d" stroke-width="1.5"/></svg>' });
+  const button = h('button', { class: 'wish-btn', type: 'button', onclick: () => {
+    box.classList.add('is-lit');
+    button.textContent = 'Dein Wunsch ist auf dem Weg ✨';
+    button.disabled = true;
+    note.textContent = 'Möge er sich auf die schönste Weise erfüllen – zur richtigen Zeit.';
+    launchPetals(26);
+  } }, 'Kerze anzünden');
+
+  box.replaceChildren(
+    h('span', { class: 'eyebrow' }, 'Dein besonderer Tag'),
+    h('h2', { class: 'bday-title' }, BIRTHDAY.title),
+    h('p', { class: 'bday-text' }, BIRTHDAY.blessing),
+    h('p', { class: 'bday-sign' }, BIRTHDAY.sign),
+    candle,
+    note,
+    button,
+  );
+  launchPetals(34);
+}
+
+/** Sanft herabschwebende Blüten und Blätter – nur kurz, und nicht bei „Bewegung reduzieren“. */
+function launchPetals(count) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#d9a58d', '#e8c4b4', '#9caf88', '#bcd6c3', '#e0c98f', '#cf9a80'];
+  const layer = h('div', { class: 'petals', 'aria-hidden': 'true' });
+  for (let i = 0; i < count; i++) {
+    const size = 8 + Math.random() * 10;
+    layer.append(h('i', { style:
+      `left:${Math.random() * 100}%;width:${size}px;height:${size * 0.7}px;background:${colors[i % colors.length]};` +
+      `animation-duration:${5 + Math.random() * 5}s;animation-delay:${Math.random() * 2.5}s;--sway:${(Math.random() * 60 - 30).toFixed(0)}px;--spin:${(Math.random() * 540 - 270).toFixed(0)}deg` }));
+  }
+  document.body.append(layer);
+  setTimeout(() => layer.remove(), 13000);
 }
 
 function renderQuote() {
-  const q = QUOTES[dayNumber() % QUOTES.length];
+  const q = isBirthday() ? BIRTHDAY.quote : QUOTES[dayNumber() % QUOTES.length];
   const text = `„${q.text}“`;
   const shareData = { text: `${text}\n– ${q.author}` };
   const canShare = typeof navigator.share === 'function';
@@ -125,7 +177,7 @@ function pickDish(date = new Date()) {
 }
 
 function renderDish() {
-  const d = pickDish();
+  const d = isBirthday() ? BIRTHDAY.dish : pickDish();
   const details = h('details', { class: 'recipe' },
     h('summary', {}, 'Rezept anzeigen'),
     h('div', { class: 'recipe-body' },
@@ -144,7 +196,7 @@ function renderDish() {
 
 function renderTip() {
   // anderer Takt als bei den Sprüchen, damit sich Paare nicht wiederholen
-  const t = TIPS[(dayNumber() * 7 + 3) % TIPS.length];
+  const t = isBirthday() ? BIRTHDAY.tip : TIPS[(dayNumber() * 7 + 3) % TIPS.length];
   $('#tip').replaceChildren(
     h('div', {}, h('span', { class: 'eyebrow' }, 'Tipp des Tages'), h('span', { class: 'tag' }, t.topic)),
     h('h3', {}, t.title),
@@ -796,6 +848,7 @@ let renderedDay = null;
 function start() {
   renderedDay = dayKey();
   renderHeader();
+  renderBirthday();
   renderQuote();
   renderTip();
   renderDish();
