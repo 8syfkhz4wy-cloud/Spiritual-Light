@@ -821,5 +821,16 @@ document.addEventListener('visibilitychange', refresh);
 setInterval(refresh, 5 * 60000);
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  // Gibt es eine neue Version, lädt die App sich einmal neu – so ist sie sofort aktuell
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloading) return;
+    reloading = true;
+    location.reload();
+  });
+  navigator.serviceWorker.register('sw.js').then((reg) => {
+    // Beim Zurückkehren in die App nach einer neuen Version schauen
+    document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && reg.update().catch(() => {}));
+  }).catch(() => {});
 }
