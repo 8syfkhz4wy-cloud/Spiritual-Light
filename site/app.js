@@ -1,7 +1,8 @@
 import { QUOTES, TIPS, DISHES } from './content.js';
 
 const NAME = 'Annett';
-const PLACE = { name: 'Jena', lat: 50.927, lon: 11.586 };
+// Heimatort: gilt, solange kein Standort freigegeben ist
+const HOME = { name: 'Jena', lat: 50.927, lon: 11.586, auto: false };
 
 // ---------- kleine Helfer ----------
 
@@ -44,6 +45,12 @@ const ICONS = {
   suncloud: '<circle cx="8" cy="8" r="3"/><path d="M8 2.500V3.500M2.500 8H3.500M4.100 4.100l.700.700M11.900 4.100l-.700.700M10 19.500a3.500 3.500 0 0 1-.300-7 4.800 4.800 0 0 1 9.200 1 3 3 0 0 1-.400 6z"/>',
   share: '<path d="M12 15V4M8 7.500 12 3.500l4 4M5 12.500v6a1.500 1.500 0 0 0 1.500 1.500h11a1.500 1.500 0 0 0 1.500-1.500v-6"/>',
   leaf: '<path d="M5 19c0-8 5-13 14-14 0 9-5 14-14 14z"/><path d="M5 19c3-4 6-7 10-9.500"/>',
+  drop: '<path d="M12 3.500c3.500 4.200 6 7.500 6 10.500a6 6 0 0 1-12 0c0-3 2.500-6.300 6-10.500z"/>',
+  gauge: '<path d="M4.500 17a8 8 0 1 1 15 0"/><path d="M12 14l3.500-4.500"/><circle cx="12" cy="14" r="1.200"/>',
+  sunrise: '<path d="M3 18.500h18M6.500 18.500a5.500 5.500 0 0 1 11 0M12 3.500v6M9.200 6.200 12 3.500l2.800 2.700"/>',
+  sunset: '<path d="M3 18.500h18M6.500 18.500a5.500 5.500 0 0 1 11 0M12 3.500v6M9.200 6.800 12 9.500l2.800-2.700"/>',
+  chevron: '<path d="M9 5.500 15.500 12 9 18.500"/>',
+  back: '<path d="M15 5.500 8.500 12 15 18.500"/>',
 };
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -145,6 +152,63 @@ function renderTip() {
   );
 }
 
+// ---------- Standort ----------
+
+const PLACE_KEY = 'spiritual-light:place';
+let place = loadPlace() || HOME;
+
+function loadPlace() {
+  try {
+    const p = JSON.parse(localStorage.getItem(PLACE_KEY));
+    return p && Number.isFinite(p.lat) && Number.isFinite(p.lon) ? p : null;
+  } catch {
+    return null;
+  }
+}
+
+function storePlace(p) {
+  try { localStorage.setItem(PLACE_KEY, JSON.stringify(p)); } catch {}
+}
+
+/** Aktuelle Position (auf ca. 1 km gerundet) oder null, wenn nicht erlaubt bzw. nicht verfügbar. */
+function getPosition() {
+  return new Promise((resolve) => {
+    if (!('geolocation' in navigator)) return resolve(null);
+    const giveUp = setTimeout(() => resolve(null), 15000); // falls die Nachfrage unbeantwortet bleibt
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        clearTimeout(giveUp);
+        resolve({ lat: +pos.coords.latitude.toFixed(2), lon: +pos.coords.longitude.toFixed(2) });
+      },
+      () => {
+        clearTimeout(giveUp);
+        resolve(null);
+      },
+      { enableHighAccuracy: false, maximumAge: 30 * 60000, timeout: 12000 },
+    );
+  });
+}
+
+async function placeName(lat, lon) {
+  try {
+    const r = await getJson(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=de`, 2);
+    return r.city || r.locality || r.principalSubdivision || null;
+  } catch {
+    return null;
+  }
+}
+
+/** Standort automatisch bestimmen; sonst bleibt der letzte bekannte Ort bzw. Jena. */
+async function locate() {
+  const pos = await getPosition();
+  if (!pos) return place;
+  const same = place.auto && Math.abs(place.lat - pos.lat) < 0.03 && Math.abs(place.lon - pos.lon) < 0.03;
+  if (same) return place;
+  place = { name: (await placeName(pos.lat, pos.lon)) || 'Dein Standort', ...pos, auto: true };
+  storePlace(place);
+  return place;
+}
+
 // ---------- Mond ----------
 
 function moonInfo(date = new Date()) {
@@ -190,14 +254,15 @@ const weatherOf = (code) => {
 const LEVELS = ['günstig', 'leicht', 'spürbar', 'stark'];
 const clamp = (n) => Math.max(0, Math.min(3, Math.round(n)));
 
-async function loadWeather() {
-  const base = `latitude=${PLACE.lat}&longitude=${PLACE.lon}&timezone=Europe%2FBerlin`;
+async function loadWeather(p = HOME) {
+  const base = `latitude=${p.lat}&longitude=${p.lon}&timezone=auto`;
   const [w, air] = await Promise.all([
     getJson(
-      `https://api.open-meteo.com/v1/forecast?${base}&past_days=1&forecast_days=2` +
-        '&current=temperature_2m,apparent_temperature,relative_humidity_2m,pressure_msl,wind_speed_10m,weather_code' +
-        '&hourly=pressure_msl' +
-        '&daily=temperature_2m_max,temperature_2m_min,uv_index_max,sunshine_duration,daylight_duration,weather_code,wind_gusts_10m_max',
+      `https://api.open-meteo.com/v1/forecast?${base}&past_days=1&forecast_days=8` +
+        '&current=temperature_2m,apparent_temperature,relative_humidity_2m,pressure_msl,wind_speed_10m,weather_code,is_day' +
+        '&hourly=pressure_msl,temperature_2m,precipitation_probability,weather_code,is_day' +
+        '&daily=temperature_2m_max,temperature_2m_min,uv_index_max,sunshine_duration,daylight_duration,weather_code,wind_gusts_10m_max' +
+        ',sunrise,sunset,precipitation_probability_max,precipitation_sum',
     ),
     getJson(
       `https://air-quality-api.open-meteo.com/v1/air-quality?${base}&forecast_days=1` +
@@ -205,11 +270,11 @@ async function loadWeather() {
         '&hourly=alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,ragweed_pollen',
     ).catch(() => null), // Luftdaten sind ein Zusatz – Biowetter geht auch ohne
   ]);
-  return { w, air };
+  return { w, air, place: p };
 }
 
 /** Leitet aus den Messwerten die Biowetter-Kategorien ab (0 = günstig … 3 = stark). */
-function buildBio({ w, air }) {
+function buildBio({ w, air, place: loc = HOME }) {
   const cur = w.current;
   const d = w.daily;
   const T = 1; // Index „heute“ (0 = gestern, 2 = morgen)
@@ -368,7 +433,7 @@ function buildBio({ w, air }) {
   ][overall];
 
   return {
-    cats, overall, headline, blurb, moon, trend,
+    cats, overall, headline, blurb, moon, trend, raw: w, place: loc,
     weather: { ...weatherOf(cur.weather_code), temp, feels: cur.apparent_temperature, tMax, tMin: d.temperature_2m_min[T], rh, pressure: cur.pressure_msl },
   };
 }
@@ -380,15 +445,18 @@ const levelDots = (level) =>
 
 function renderBio(bio) {
   const w = bio.weather;
+  $('#bio-sub').textContent = `${bio.place.name} · heute`;
+  renderWeather(bio);
   // Startseite: Wetter + Mond
   const moonNext = bio.moon.daysToFull < bio.moon.daysToNew
     ? `Vollmond in ${Math.max(1, Math.round(bio.moon.daysToFull))} T.`
     : `Neumond in ${Math.max(1, Math.round(bio.moon.daysToNew))} T.`;
   $('#weather-strip').replaceChildren(
     h('div', { class: 'weather' },
-      h('div', { class: 'pill-card' },
+      h('button', { class: 'pill-card is-link', type: 'button', 'aria-label': `Wetter in ${bio.place.name}: Details und 7-Tage-Vorhersage`, onclick: () => showView('wetter') },
         h('span', { html: svg(ICONS[w.icon]) }),
-        h('div', {}, h('strong', {}, `${Math.round(w.temp)}° · ${PLACE.name}`), h('small', {}, w.label))),
+        h('div', {}, h('strong', {}, `${Math.round(w.temp)}°`), h('small', {}, `${bio.place.name} · ${w.label}`)),
+        h('span', { class: 'pill-go', html: svg(ICONS.chevron) })),
       h('div', { class: 'pill-card' },
         h('span', { html: moonSvg(bio.moon) }),
         h('div', {}, h('strong', {}, bio.moon.name), h('small', {}, ['Vollmond', 'Neumond'].includes(bio.moon.name) ? `${Math.round(bio.moon.lit * 100)} % beleuchtet` : moonNext)))),
@@ -413,6 +481,8 @@ function renderBio(bio) {
         fact(`${Math.round(w.tMin)}° / ${Math.round(w.tMax)}°`, 'Tief / Hoch'),
         fact(`${Math.round(w.pressure)} hPa`, `Luftdruck ${bio.trend}`),
         fact(`${Math.round(w.rh)} %`, 'Luftfeuchte')),
+      h('button', { class: 'card link-card', type: 'button', onclick: () => showView('wetter') },
+        h('span', { html: svg(ICONS.suncloud) }), 'Wetter heute & 7-Tage-Vorhersage', h('span', { class: 'pill-go', html: svg(ICONS.chevron) })),
       bio.cats.map((c) =>
         h('article', { class: 'card bio-item' },
           h('span', { class: 'bio-icon', html: svg(ICONS[c.icon]) }),
@@ -420,7 +490,95 @@ function renderBio(bio) {
           h('p', { class: 'bio-text' }, c.text))),
       h('p', { class: 'note' }, 'Orientierung auf Basis aktueller Wetter- und Luftdaten von ',
         h('a', { href: 'https://open-meteo.com/', target: '_blank', rel: 'noopener' }, 'Open-Meteo'),
-        ` für Jena. ${bio.offline ? 'Ohne Verbindung – letzter' : ''}${bio.offline ? ' ' : ''}Stand: ${new Date(bio.stamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr, wird stündlich aktualisiert. Kein Ersatz für ärztlichen Rat.`)),
+        ` für ${bio.place.name}. ${bio.offline ? 'Ohne Verbindung – letzter' : ''}${bio.offline ? ' ' : ''}Stand: ${new Date(bio.stamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr, wird stündlich aktualisiert. Kein Ersatz für ärztlichen Rat.`)),
+  );
+}
+
+// ---------- Wetter-Details & 7 Tage ----------
+
+const hhmm = (t) => (t ? t.slice(11, 16) : '–');
+
+function iconFor(code, isDay = 1) {
+  const { icon } = weatherOf(code);
+  if (!isDay && icon === 'sun') return 'moon';
+  if (!isDay && icon === 'suncloud') return 'cloud';
+  return icon;
+}
+
+function renderWeather(bio) {
+  const w = bio.raw;
+  const cur = w.current;
+  const d = w.daily;
+  const T = 1;
+  const now = bio.weather;
+  $('#wetter-sub').textContent = `${bio.place.name}${bio.place.auto ? ' · dein Standort' : ''}`;
+
+  // Die nächsten 24 Stunden
+  const hTimes = w.hourly.time;
+  const start = Math.max(0, hTimes.indexOf(cur.time.slice(0, 13) + ':00'));
+  const hours = [];
+  for (let i = start; i < Math.min(start + 24, hTimes.length); i++) {
+    const rain = w.hourly.precipitation_probability[i];
+    hours.push(h('div', { class: 'hour' },
+      h('small', {}, i === start ? 'Jetzt' : `${hTimes[i].slice(11, 13)} Uhr`),
+      h('span', { html: svg(ICONS[iconFor(w.hourly.weather_code[i], w.hourly.is_day[i])]) }),
+      h('strong', {}, `${Math.round(w.hourly.temperature_2m[i])}°`),
+      h('small', { class: 'rain' }, rain >= 10 ? `${rain} %` : ' ')));
+  }
+
+  // 7 Tage
+  const days = [];
+  for (let i = T; i < Math.min(T + 7, d.time.length); i++) days.push(i);
+  const lo = Math.min(...days.map((i) => d.temperature_2m_min[i]));
+  const hi = Math.max(...days.map((i) => d.temperature_2m_max[i]));
+  const pct = (t) => ((t - lo) / Math.max(1, hi - lo)) * 100;
+  const dayLabel = (i) => {
+    if (i === T) return 'Heute';
+    if (i === T + 1) return 'Morgen';
+    return new Date(d.time[i] + 'T12:00').toLocaleDateString('de-DE', { weekday: 'short' }).replace('.', '');
+  };
+  const dateLabel = (i) => new Date(d.time[i] + 'T12:00').toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' });
+
+  const detail = (icon, label, value) =>
+    h('div', { class: 'detail' }, h('span', { html: svg(ICONS[icon]) }), h('div', {}, h('small', {}, label), h('strong', {}, value)));
+
+  $('#wetter').replaceChildren(
+    h('div', { class: 'stack' },
+      h('article', { class: 'card now-card' },
+        h('span', { class: 'now-icon', html: svg(ICONS[iconFor(cur.weather_code, cur.is_day)]) }),
+        h('div', {},
+          h('p', { class: 'now-temp' }, `${Math.round(now.temp)}°`),
+          h('p', { class: 'now-label' }, now.label),
+          h('p', { class: 'now-sub' }, `Gefühlt ${Math.round(now.feels)}° · Tief ${Math.round(now.tMin)}° · Hoch ${Math.round(now.tMax)}°`))),
+      h('div', { class: 'section-head' }, h('h2', {}, 'Die nächsten 24 Stunden')),
+      h('div', { class: 'hours', tabindex: '0', 'aria-label': 'Stündliche Vorhersage, seitlich wischen' }, hours),
+      h('div', { class: 'section-head' }, h('h2', {}, 'Heute im Detail')),
+      h('div', { class: 'details' },
+        detail('drop', 'Regenrisiko', `${d.precipitation_probability_max[T] ?? 0} % · ${fmt1(d.precipitation_sum[T] ?? 0)} mm`),
+        detail('wind', 'Wind', `${Math.round(cur.wind_speed_10m)} km/h · Böen ${Math.round(d.wind_gusts_10m_max[T] ?? 0)}`),
+        detail('gauge', 'Luftdruck', `${Math.round(now.pressure)} hPa · ${bio.trend}`),
+        detail('leaf', 'Luftfeuchte', `${Math.round(now.rh)} %`),
+        detail('sunrise', 'Sonnenaufgang', `${hhmm(d.sunrise[T])} Uhr`),
+        detail('sunset', 'Sonnenuntergang', `${hhmm(d.sunset[T])} Uhr`),
+        detail('sun', 'UV-Index', fmt1(d.uv_index_max[T] ?? 0)),
+        detail('suncloud', 'Sonnenstunden', `${fmt1((d.sunshine_duration[T] ?? 0) / 3600)} Std.`)),
+      h('div', { class: 'section-head' }, h('h2', {}, '7-Tage-Vorhersage')),
+      h('article', { class: 'card week' },
+        days.map((i) => {
+          const rain = d.precipitation_probability_max[i] ?? 0;
+          return h('div', { class: 'day' },
+            h('div', { class: 'day-name' }, h('strong', {}, dayLabel(i)), h('small', {}, dateLabel(i))),
+            h('span', { class: 'day-icon', html: svg(ICONS[iconFor(d.weather_code[i])]) }),
+            h('small', { class: 'rain' }, rain >= 10 ? `${rain} %` : ''),
+            h('span', { class: 'lo' }, `${Math.round(d.temperature_2m_min[i])}°`),
+            h('span', { class: 'range', 'aria-hidden': 'true' },
+              h('i', { style: `left:${pct(d.temperature_2m_min[i]).toFixed(1)}%;right:${(100 - pct(d.temperature_2m_max[i])).toFixed(1)}%` })),
+            h('span', { class: 'hi' }, `${Math.round(d.temperature_2m_max[i])}°`));
+        })),
+      !bio.place.auto &&
+        h('p', { class: 'note' }, 'Tipp: Erlaube der App den Standort, dann zeigt sie das Wetter dort, wo du gerade bist. Sonst gilt Jena.'),
+      h('p', { class: 'note' }, 'Wetterdaten: ', h('a', { href: 'https://open-meteo.com/', target: '_blank', rel: 'noopener' }, 'Open-Meteo'),
+        `. Stand: ${new Date(bio.stamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr.`)),
   );
 }
 
@@ -437,6 +595,8 @@ function renderBioError() {
     h('p', {}, 'Das Biowetter konnte gerade nicht geladen werden. Bitte prüfe deine Internetverbindung.'),
     h('button', { class: 'more', onclick: () => initBio() }, 'Erneut versuchen'));
   $('#bio').replaceChildren(msg);
+  $('#wetter').replaceChildren(msg.cloneNode(true));
+  $('#wetter .more')?.addEventListener('click', () => initBio());
   $('#home-bio').replaceChildren();
   // Der Mond lässt sich auch ohne Netz berechnen
   const m = moonInfo();
@@ -470,7 +630,7 @@ async function initBio({ quiet = false } = {}) {
     $('#bio').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' })));
   }
   try {
-    const data = await loadWeather();
+    const data = await loadWeather(await locate());
     renderBio({ ...buildBio(data), stamp: Date.now() });
     saveWeather(data);
     weatherLoadedAt = Date.now();
@@ -583,14 +743,25 @@ async function initFeeds() {
 
 // ---------- Navigation ----------
 
-function showView(name) {
+let currentView = 'heute';
+
+function showView(name, { push = true } = {}) {
+  // Die Zurück-Taste des Handys führt zur Startseite statt die App zu schließen
+  if (push && name !== currentView) {
+    if (name === 'heute') {
+      if (history.state?.view) history.back();
+    } else if (currentView === 'heute') history.pushState({ view: name }, '');
+    else history.replaceState({ view: name }, '');
+  }
+  currentView = name;
+  const tab = name === 'wetter' ? 'heute' : name;
   for (const view of document.querySelectorAll('.view')) {
     const on = view.id === `view-${name}`;
     view.hidden = !on;
     view.classList.toggle('is-active', on);
   }
   for (const btn of document.querySelectorAll('.tabs button')) {
-    const on = btn.dataset.view === name;
+    const on = btn.dataset.view === tab;
     btn.classList.toggle('is-active', on);
     if (on) btn.setAttribute('aria-current', 'page');
     else btn.removeAttribute('aria-current');
@@ -598,6 +769,9 @@ function showView(name) {
   document.querySelector('.top').hidden = name !== 'heute';
   window.scrollTo(0, 0);
 }
+
+window.addEventListener('popstate', (e) => showView(e.state?.view || 'heute', { push: false }));
+$('#wetter-back').addEventListener('click', () => (history.state?.view ? history.back() : showView('heute', { push: false })));
 
 document.querySelector('.tabs').addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-view]');
