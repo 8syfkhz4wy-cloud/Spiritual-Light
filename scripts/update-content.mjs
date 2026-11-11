@@ -3,11 +3,13 @@
 // und schreibt sie nach site/data/*.json. Läuft ohne Abhängigkeiten (Node 20+).
 // Fällt eine Quelle aus, bleibt der bisherige Stand dieser Rubrik erhalten.
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-const DATA_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'site', 'data');
+const SITE_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'site');
+const DATA_DIR = path.join(SITE_DIR, 'data');
+const COVER_DIR = path.join(SITE_DIR, 'covers');
 const UA = 'Mozilla/5.0 (compatible; SpiritualLight/1.0; feed reader)';
 
 // ---------- Quellen ----------
@@ -199,7 +201,8 @@ function parseBook(rec) {
   const rawTitle = clean(all('title')[0]?.[2] || '');
   if (!rawTitle) return null;
   // "Titel : Untertitel / Verantwortliche"
-  const main = rawTitle.replace(/\s\/\s[^/]*$/, '');
+  // Originaltitel in eckigen Klammern („[The missing peace] ; …“) entfernen
+  const main = rawTitle.replace(/\s\/\s[^/]*$/, '').replace(/^\[[^\]]*\]\s*;?\s*/, '');
   const [title, ...rest] = main.split(' : ');
   const ids = all('identifier').map((m) => ({ type: (m[1].match(/xsi:type="([^"]+)"/) || [])[1], value: clean(m[2]) }));
   const idn = ids.find((i) => i.type === 'dnb:IDN')?.value;
@@ -250,7 +253,7 @@ async function loadBooks() {
   const books = recs
     .map(parseBook)
     .filter(Boolean)
-    .filter((b) => b.isbn && b.type !== 'Online-Ressource')
+    .filter((b) => b.isbn && b.type !== 'Online-Ressource' && !/^\d{4}$/.test(b.title))
     .filter((b) => !BOOK_SKIP_RE.test(b.title + ' ' + b.subtitle) && !PUBLISHER_SKIP_RE.test(b.publisher))
     // Die IDN wird fortlaufend vergeben: höchste Nummer = zuletzt katalogisiert
     .sort((a, b) => parseInt(b.idn, 10) - parseInt(a.idn, 10))
@@ -264,6 +267,41 @@ async function loadBooks() {
     .slice(0, 30)
     .map(({ type, idn, ...b }) => b);
   return books.length ? books : null;
+}
+
+// ---------- Buchcover ----------
+// Der Cover-Server der DNB zeigt Browsern eine Bot-Prüfung. Darum laden wir die Bilder hier
+// herunter und liefern sie zusammen mit der App aus (Ordner site/covers, nicht im Repository).
+
+async function downloadCover(isbn) {
+  const res = await fetch(`https://portal.dnb.de/opac/mvb/cover?isbn=${isbn}`, {
+    headers: { 'User-Agent': 'SpiritualLight/1.0 (cover fetch)' },
+    signal: AbortSignal.timeout(20000),
+  });
+  const type = res.headers.get('content-type') || '';
+  if (!res.ok || !type.startsWith('image/')) return null;
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.length < 1500) return null; // Platzhalter
+  const file = `${isbn}.${type.includes('png') ? 'png' : 'jpg'}`;
+  await writeFile(path.join(COVER_DIR, file), buf);
+  return `covers/${file}`;
+}
+
+async function addCovers(books) {
+  await rm(COVER_DIR, { recursive: true, force: true });
+  await mkdir(COVER_DIR, { recursive: true });
+  let found = 0;
+  const queue = [...books];
+  const worker = async () => {
+    for (let b; (b = queue.shift()); ) {
+      delete b.cover;
+      if (!b.isbn) continue;
+      const cover = await downloadCover(b.isbn).catch(() => null);
+      if (cover) { b.cover = cover; found++; }
+    }
+  };
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  console.log(`  ✓ Cover: ${found} von ${books.length}`);
 }
 
 // ---------- Schreiben ----------
@@ -296,6 +334,7 @@ async function main() {
   const books = await loadBooks().catch((e) => (console.warn('  ! Bücher:', e.message), null));
   const oldBooks = (await readJson('books.json')) || {};
   const out = { updated: books ? stamp : oldBooks.updated || stamp, books: books || oldBooks.books || [] };
+  await addCovers(out.books).catch((e) => console.warn('  ! Cover:', e.message));
   await writeFile(path.join(DATA_DIR, 'books.json'), JSON.stringify(out, null, 1) + '\n');
 
   console.log(`Fertig: ${news.germany.length} News (D), ${news.jena.length} News (Jena), ${out.books.length} Bücher.`);

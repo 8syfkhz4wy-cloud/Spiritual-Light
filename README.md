@@ -8,11 +8,18 @@ Annetts täglicher Begleiter fürs Android-Smartphone – eine installierbare We
 | --- | --- | --- |
 | **Spruch des Tages** | jeden Tag ein anderer spiritueller Spruch | `site/content.js` |
 | **Tipp des Tages** | jeden Tag ein kleiner Impuls für Achtsamkeit und Wohlbefinden | `site/content.js` |
+| **Gericht des Tages** | vegetarisches Rezept mit spiritueller Bedeutung; an Jahreskreisfesten, Vollmond und Neumond das passende Gericht | `site/content.js` |
 | **Biowetter** | 8 Kategorien für Jena: Kreislauf, Kopf & Migräne, Gelenke & Rheuma, Atemwege, Schlaf, Stimmung, Pollen, Sonne & Haut – dazu die Mondphase | live von [Open-Meteo](https://open-meteo.com/) |
 | **News** | Deutschland (newslichter, SEIN, Yoga Aktuell, Spirit Online) und Jena & Thüringen | RSS, täglich aktualisiert |
-| **Neue Bücher** | Neuerscheinungen zu Spiritualität, Esoterik und Achtsamkeit | Deutsche Nationalbibliothek, täglich aktualisiert |
+| **Neue Bücher** | Neuerscheinungen zu Spiritualität, Esoterik und Achtsamkeit, mit Cover | Deutsche Nationalbibliothek, täglich aktualisiert |
 
 Das Biowetter wird in der App aus aktuellen Wetter-, Luft- und Pollendaten berechnet. Es ist eine Orientierung und kein ärztlicher Rat.
+
+## Aktualisierung
+
+- **Wetter und Biowetter:** beim Öffnen der App und stündlich, solange sie offen ist. Ohne Netz zeigt die App den letzten Stand vom selben Tag.
+- **Spruch, Tipp und Gericht:** wechseln um Mitternacht.
+- **News, Bücher und Cover:** der Workflow holt sie jeden Morgen gegen 4–5 Uhr, speichert den neuen Stand in `site/data` und veröffentlicht die App. Die Cover landen nur in der veröffentlichten Seite (`site/covers` ist nicht im Repository).
 
 ## Veröffentlichen (einmalig)
 
