@@ -1,5 +1,5 @@
 // Service Worker: macht die App installierbar und offline nutzbar.
-const CACHE = 'spiritual-light-v8';
+const CACHE = 'spiritual-light-v9';
 const SHELL = [
   './',
   'index.html',
@@ -29,10 +29,11 @@ self.addEventListener('activate', (event) => {
 });
 
 // Erst das Netz fragen (frische Inhalte), bei fehlender Verbindung den letzten Stand zeigen.
-async function networkFirst(request) {
+async function networkFirst(request, fresh) {
   const cache = await caches.open(CACHE);
   try {
-    const res = await fetch(request);
+    // Eigene Dateien immer beim Server nachfragen (statt bis zu 10 Min. aus dem Browser-Cache)
+    const res = await fetch(request, fresh ? { cache: 'no-cache' } : undefined);
     if (res.ok) cache.put(request, res.clone());
     return res;
   } catch (err) {
@@ -48,5 +49,5 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   const sameOrigin = url.origin === self.location.origin;
   const isWeather = url.hostname.endsWith('open-meteo.com');
-  if (sameOrigin || isWeather) event.respondWith(networkFirst(request));
+  if (sameOrigin || isWeather) event.respondWith(networkFirst(request, sameOrigin));
 });
