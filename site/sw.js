@@ -1,5 +1,5 @@
 // Service Worker: macht die App installierbar und offline nutzbar.
-const CACHE = 'spiritual-light-v1';
+const CACHE = 'spiritual-light-v2';
 const SHELL = [
   './',
   'index.html',
