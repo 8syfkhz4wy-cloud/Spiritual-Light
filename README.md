@@ -16,6 +16,10 @@ Annetts täglicher Begleiter fürs Android-Smartphone – eine installierbare We
 
 Das Biowetter wird in der App aus aktuellen Wetter-, Luft- und Pollendaten berechnet. Es ist eine Orientierung und kein ärztlicher Rat.
 
+## Farbwelt
+
+Ganz unten auf der Startseite lässt sich die Farbwelt wählen: **Automatisch** (Standard: Salbei, im Dunkelmodus des Handys Abend), **Hell**, **Salbei** oder **Abend**. Die Wahl wird auf dem Handy gespeichert. Die Farben stehen als Variablen am Anfang von `site/styles.css`.
+
 ## Geburtstag
 
 Am **13. November** feiert die App jedes Jahr Annetts Geburtstag: eigene Begrüßung, Geburtstagskarte mit Segenswunsch und Wunschkerze zum Antippen, schwebende Blüten, ein Geburtstagsspruch, ein Geburtstagsritual als Tipp und ein Geburtstagskuchen als Gericht des Tages. Texte und Datum stehen unter `BIRTHDAY` in `site/content.js`.

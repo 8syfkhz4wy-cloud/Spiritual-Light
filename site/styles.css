@@ -41,7 +41,71 @@
   --sans: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --radius: 26px;
   --shadow: 0 10px 30px -18px rgba(63, 81, 68, 0.35);
+  --tip-from: #e3d8c1;
+  --bday-from: #ead9c3;
+  --accent-ink: #8a5a45;
+  --tag-ink: #7a5c48;
+  --on-clay: #fffaf0;
+  --rain: #3f6e7e;
+  --glass: rgba(235, 229, 214, 0.8);
+  --nav: rgba(235, 229, 214, 0.94);
+  --moon-dark: #dfe6d6;
+  --moon-lit: #6b8262;
 }
+
+/* Farbwelt „Salbei“: dunkler und kräftiger grün */
+:root[data-theme='salbei'] {
+  --cream: #b9c6ad;
+  --paper: #d9dbc8;
+  --mint: #a2c4ad;
+  --mint-deep: #86b096;
+  --sage: #7f9670;
+  --sage-soft: #a9b998;
+  --sage-deep: #435c3c;
+  --forest: #2f4134;
+  --ink: #2c3a30;
+  --muted: #47554a;
+  --sand: #c7b48f;
+  --line: rgba(67, 92, 60, 0.2);
+  --tip-from: #d3c6a8;
+  --bday-from: #dcc5a8;
+  --glass: rgba(217, 219, 200, 0.85);
+  --nav: rgba(217, 219, 200, 0.95);
+  --moon-dark: #c9d1bd;
+  --moon-lit: #435c3c;
+  --shadow: 0 10px 30px -18px rgba(40, 56, 44, 0.5);
+}
+
+/* Farbwelt „Abend“: dunkler Waldgrund, helle Schrift – schont die Augen */
+:root[data-theme='abend'] {
+  --cream: #1f2923;
+  --paper: #2b362f;
+  --mint: #36503f;
+  --mint-deep: #4b6b57;
+  --sage: #8ea57f;
+  --sage-soft: #2f3d33;
+  --sage-deep: #a8c49a;
+  --forest: #e6eadc;
+  --ink: #d9dfd1;
+  --muted: #a5b2a4;
+  --sand: #4d4433;
+  --clay: #c98f74;
+  --line: rgba(168, 196, 154, 0.16);
+  --tip-from: #3a3a2e;
+  --bday-from: #4a3a2e;
+  --accent-ink: #e7b69c;
+  --tag-ink: #e3cfae;
+  --on-clay: #1f2923;
+  --rain: #8cc3d4;
+  --glass: rgba(43, 54, 47, 0.85);
+  --nav: rgba(37, 47, 41, 0.95);
+  --moon-dark: #3d4a41;
+  --moon-lit: #e6eadc;
+  --shadow: 0 12px 30px -16px rgba(0, 0, 0, 0.6);
+}
+:root[data-theme='abend'] .cover span { color: rgba(31, 41, 35, 0.8); }
+:root[data-theme='abend'] .wish-btn:disabled { color: var(--forest); }
+:root[data-theme='abend'] .candle svg rect { fill: #efe6d4; }
 
 * { box-sizing: border-box; }
 
@@ -129,18 +193,18 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round
   padding: 30px 22px 26px;
   background:
     radial-gradient(120% 70% at 50% 0%, rgba(233, 176, 122, 0.35), transparent 60%),
-    linear-gradient(170deg, #ead9c3 0%, var(--paper) 70%);
+    linear-gradient(170deg, var(--bday-from) 0%, var(--paper) 70%);
   border-color: rgba(207, 154, 128, 0.4);
 }
 .birthday-card::before {
   content: ''; position: absolute; inset: 9px; border-radius: 19px; pointer-events: none;
   border: 1px dashed rgba(207, 154, 128, 0.45);
 }
-.birthday-card .eyebrow { color: #a4694f; }
+.birthday-card .eyebrow { color: var(--accent-ink); }
 .birthday-card .eyebrow::before { background: var(--clay); }
 .bday-title { font-family: var(--serif); font-weight: 600; font-size: 2rem; line-height: 1.12; color: var(--forest); margin: 10px 0 12px; text-wrap: balance; }
 .bday-text { font-size: 0.98rem; line-height: 1.6; }
-.bday-sign { font-family: var(--serif); font-style: italic; font-size: 1.12rem; line-height: 1.35; color: #8a5a45; margin-top: 12px; }
+.bday-sign { font-family: var(--serif); font-style: italic; font-size: 1.12rem; line-height: 1.35; color: var(--accent-ink); margin-top: 12px; }
 .candle { display: block; width: 64px; margin: 18px auto 6px; }
 .candle svg { width: 64px; height: 96px; display: block; margin: 0 auto; }
 .candle .flame { stroke: none; opacity: 0; transform-origin: 30px 30px; transition: opacity 0.6s; }
@@ -150,7 +214,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round
 .wish-note { font-size: 0.86rem; color: var(--muted); margin: 4px 0 12px; }
 .wish-btn {
   display: inline-flex; padding: 12px 22px; border-radius: 999px; font-weight: 800; font-size: 0.95rem;
-  background: var(--clay); color: #fffaf0; box-shadow: 0 10px 22px -12px rgba(164, 105, 79, 0.8);
+  background: var(--clay); color: var(--on-clay); box-shadow: 0 10px 22px -12px rgba(164, 105, 79, 0.8);
 }
 .wish-btn:disabled { background: var(--mint); color: var(--forest); box-shadow: none; }
 
@@ -192,7 +256,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round
 .quote-author { font-size: 0.86rem; font-weight: 700; color: var(--sage-deep); letter-spacing: 0.04em; }
 .share {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 16px;
-  padding: 9px 16px; border-radius: 999px; background: rgba(235, 229, 214, 0.8);
+  padding: 9px 16px; border-radius: 999px; background: var(--glass);
   font-size: 0.82rem; font-weight: 700; color: var(--sage-deep);
   position: relative;
 }
@@ -251,7 +315,7 @@ button.pill-card { width: 100%; text-align: left; cursor: pointer; }
 .hour small { font-size: 0.74rem; color: var(--muted); font-weight: 700; }
 .hour svg { width: 26px; height: 26px; color: var(--sage-deep); display: block; }
 .hour strong { font-size: 1rem; color: var(--forest); }
-.rain { color: #4f7a8a !important; font-weight: 800; font-size: 0.74rem; }
+.rain { color: var(--rain) !important; font-weight: 800; font-size: 0.74rem; }
 
 .details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .detail { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--paper); border: 1px solid var(--line); border-radius: 20px; min-width: 0; }
@@ -321,7 +385,7 @@ button.pill-card { width: 100%; text-align: left; cursor: pointer; }
 
 /* ---------- Tipp ---------- */
 
-.tip-card { background: linear-gradient(165deg, #e3d8c1, var(--paper)); border-color: rgba(207, 154, 128, 0.25); }
+.tip-card { background: linear-gradient(165deg, var(--tip-from), var(--paper)); border-color: rgba(207, 154, 128, 0.25); }
 .tip-card h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--forest); margin: 8px 0 6px; line-height: 1.15; }
 .tip-card p { font-size: 0.97rem; }
 
@@ -346,7 +410,7 @@ button.pill-card { width: 100%; text-align: left; cursor: pointer; }
 .recipe-body li::marker { color: var(--sage); font-weight: 700; }
 .tag {
   display: inline-block; margin-left: 8px; padding: 3px 10px; border-radius: 999px;
-  background: var(--sand); color: #8a6a55; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--sand); color: var(--tag-ink); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
 }
 
 /* ---------- News ---------- */
@@ -393,6 +457,21 @@ button.pill-card { width: 100%; text-align: left; cursor: pointer; }
 .skeleton { height: 92px; border-radius: var(--radius); background: linear-gradient(100deg, rgba(156,175,136,.12) 30%, rgba(156,175,136,.24) 50%, rgba(156,175,136,.12) 70%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
 @keyframes shimmer { to { background-position: -200% 0; } }
 
+/* ---------- Farbwelt-Umschalter ---------- */
+
+.theme-picker { display: grid; gap: 10px; justify-items: center; padding: 10px 0 4px; }
+.theme-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.theme-options button {
+  display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px 8px 8px; border-radius: 999px;
+  background: var(--paper); border: 1px solid var(--line); font-size: 0.86rem; font-weight: 700; color: var(--ink);
+}
+.theme-options button[aria-checked='true'] { border-color: var(--sage-deep); box-shadow: inset 0 0 0 1px var(--sage-deep); color: var(--forest); }
+.swatch { width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, 0.12); }
+.swatch-auto { background: linear-gradient(135deg, #b9c6ad 50%, #1f2923 50%); }
+.swatch-hell { background: linear-gradient(135deg, #ebe5d6, #bcd6c3); }
+.swatch-salbei { background: linear-gradient(135deg, #d9dbc8, #86b096); }
+.swatch-abend { background: linear-gradient(135deg, #2b362f, #4b6b57); }
+
 /* ---------- Navigation ---------- */
 
 .tabs {
@@ -400,7 +479,7 @@ button.pill-card { width: 100%; text-align: left; cursor: pointer; }
   bottom: calc(env(safe-area-inset-bottom) + 12px);
   width: min(calc(100% - 24px), 496px);
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 6px;
-  background: rgba(235, 229, 214, 0.94); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: var(--nav); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--line); border-radius: 28px;
   box-shadow: 0 16px 34px -18px rgba(63, 81, 68, 0.55);
   z-index: 10;
