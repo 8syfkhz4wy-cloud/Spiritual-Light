@@ -9,11 +9,16 @@ Annetts täglicher Begleiter fürs Android-Smartphone – eine installierbare We
 | **Spruch des Tages** | jeden Tag ein anderer spiritueller Spruch | `site/content.js` |
 | **Tipp des Tages** | jeden Tag ein kleiner Impuls für Achtsamkeit und Wohlbefinden | `site/content.js` |
 | **Gericht des Tages** | vegetarisches Rezept mit spiritueller Bedeutung; an Jahreskreisfesten, Vollmond und Neumond das passende Gericht | `site/content.js` |
-| **Biowetter** | 8 Kategorien für Jena: Kreislauf, Kopf & Migräne, Gelenke & Rheuma, Atemwege, Schlaf, Stimmung, Pollen, Sonne & Haut – dazu die Mondphase | live von [Open-Meteo](https://open-meteo.com/) |
+| **Wetter** | aktuelles Wetter, die nächsten 24 Stunden, Tagesdetails (Regen, Wind, Luftdruck, Sonne) und 7-Tage-Vorhersage – Wetterkachel auf der Startseite antippen | live von [Open-Meteo](https://open-meteo.com/) |
+| **Biowetter** | 8 Kategorien für den aktuellen Standort (sonst Jena): Kreislauf, Kopf & Migräne, Gelenke & Rheuma, Atemwege, Schlaf, Stimmung, Pollen, Sonne & Haut – dazu die Mondphase | live von [Open-Meteo](https://open-meteo.com/) |
 | **News** | Deutschland (newslichter, SEIN, Yoga Aktuell, Spirit Online) und Jena & Thüringen | RSS, täglich aktualisiert |
 | **Neue Bücher** | Neuerscheinungen zu Spiritualität, Esoterik und Achtsamkeit, mit Cover | Deutsche Nationalbibliothek, täglich aktualisiert |
 
 Das Biowetter wird in der App aus aktuellen Wetter-, Luft- und Pollendaten berechnet. Es ist eine Orientierung und kein ärztlicher Rat.
+
+## Standort
+
+Beim ersten Öffnen fragt die App nach dem Standort. Wird er erlaubt, gelten Wetter und Biowetter für den Ort, an dem das Handy gerade ist (auf etwa 1 km gerundet; der Ortsname kommt von BigDataCloud). Ohne Freigabe gilt Jena. Die News-Rubrik „Jena & Thüringen“ bleibt immer regional. Die Freigabe lässt sich in den Handy-Einstellungen unter Apps bzw. Website-Einstellungen ändern.
 
 ## Aktualisierung
 

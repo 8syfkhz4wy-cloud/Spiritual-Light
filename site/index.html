@@ -41,8 +41,18 @@
       <!-- Biowetter -->
       <section class="view" id="view-bio" aria-labelledby="tab-bio" hidden>
         <h2 class="view-title">Biowetter</h2>
-        <p class="view-sub">Jena · heute</p>
+        <p class="view-sub" id="bio-sub">Jena · heute</p>
         <div id="bio"></div>
+      </section>
+
+      <!-- Wetter-Details (über die Wetterkachel erreichbar) -->
+      <section class="view" id="view-wetter" aria-label="Wetter-Details" hidden>
+        <button class="back" id="wetter-back" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5.5 8.5 12 15 18.5"/></svg>Zurück
+        </button>
+        <h2 class="view-title">Wetter</h2>
+        <p class="view-sub" id="wetter-sub">Jena</p>
+        <div id="wetter"></div>
       </section>
 
       <!-- News -->
