@@ -16,6 +16,10 @@ Annetts täglicher Begleiter fürs Android-Smartphone – eine installierbare We
 
 Das Biowetter wird in der App aus aktuellen Wetter-, Luft- und Pollendaten berechnet. Es ist eine Orientierung und kein ärztlicher Rat.
 
+## Geburtstag
+
+Am **13. November** feiert die App jedes Jahr Annetts Geburtstag: eigene Begrüßung, Geburtstagskarte mit Segenswunsch und Wunschkerze zum Antippen, schwebende Blüten, ein Geburtstagsspruch, ein Geburtstagsritual als Tipp und ein Geburtstagskuchen als Gericht des Tages. Texte und Datum stehen unter `BIRTHDAY` in `site/content.js`.
+
 ## Standort
 
 Beim ersten Öffnen fragt die App nach dem Standort. Wird er erlaubt, gelten Wetter und Biowetter für den Ort, an dem das Handy gerade ist (auf etwa 1 km gerundet; der Ortsname kommt von BigDataCloud). Ohne Freigabe gilt Jena. Die News-Rubrik „Jena & Thüringen“ bleibt immer regional. Die Freigabe lässt sich in den Handy-Einstellungen unter Apps bzw. Website-Einstellungen ändern.
