@@ -62,10 +62,20 @@ function relDate(iso) {
   return d.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: diff > 300 ? 'numeric' : undefined });
 }
 
-async function getJson(url) {
-  const res = await fetch(url, { cache: 'no-cache' });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** JSON laden; bei kurzen Netzaussetzern bis zu zwei weitere Versuche. */
+async function getJson(url, tries = 3) {
+  for (let i = 1; ; i++) {
+    try {
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      if (i >= tries) throw err;
+      await wait(800 * i);
+    }
+  }
 }
 
 // ---------- Kopf, Spruch, Tipp ----------
@@ -94,8 +104,21 @@ function renderQuote() {
   ].filter(Boolean));
 }
 
+const inSeason = (ranges, md) => ranges.some(([from, to]) => (from <= to ? md >= from && md <= to : md >= from || md <= to));
+
+/** Festtags- und Mondgerichte haben an ihren Tagen Vorrang, sonst wechseln die übrigen Gerichte reihum. */
+function pickDish(date = new Date()) {
+  const md = `${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  const moon = moonInfo(date);
+  const phase = moon.nearFull ? 'full' : moon.f < 0.04 || moon.f > 0.96 ? 'new' : null;
+  const special = DISHES.find((d) => d.season && inSeason(d.season, md)) || (phase && DISHES.find((d) => d.moon === phase));
+  if (special) return special;
+  const pool = DISHES.filter((d) => !d.season && !d.moon);
+  return pool[(dayNumber(date) * 11 + 5) % pool.length];
+}
+
 function renderDish() {
-  const d = DISHES[(dayNumber() * 11 + 5) % DISHES.length];
+  const d = pickDish();
   const details = h('details', { class: 'recipe' },
     h('summary', {}, 'Rezept anzeigen'),
     h('div', { class: 'recipe-body' },
@@ -291,7 +314,7 @@ function buildBio({ w, air }) {
     let s = sunH < 1 ? 2 : sunH < 3 ? 1 : 0;
     if (dayH < 9) s += 1;
     const level = clamp(s);
-    const sunTxt = `${fmt1(sunH)} Std. Sonne`;
+    const sunTxt = sunH < 0.5 ? 'kaum Sonne' : `${fmt1(sunH)} Std. Sonne`;
     const text = level === 0
       ? `Viel Licht heute (${sunTxt}) – das hebt Stimmung und Energie. Nimm so viel davon mit, wie du kannst.`
       : level === 1
@@ -397,7 +420,7 @@ function renderBio(bio) {
           h('p', { class: 'bio-text' }, c.text))),
       h('p', { class: 'note' }, 'Orientierung auf Basis aktueller Wetter- und Luftdaten von ',
         h('a', { href: 'https://open-meteo.com/', target: '_blank', rel: 'noopener' }, 'Open-Meteo'),
-        ` für Jena. Stand: ${new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr, wird stündlich aktualisiert. Kein Ersatz für ärztlichen Rat.`)),
+        ` für Jena. ${bio.offline ? 'Ohne Verbindung – letzter' : ''}${bio.offline ? ' ' : ''}Stand: ${new Date(bio.stamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr, wird stündlich aktualisiert. Kein Ersatz für ärztlichen Rat.`)),
   );
 }
 
@@ -426,18 +449,45 @@ let weatherLoadedAt = 0;
 let hasWeather = false;
 
 /** Lädt Wetter und Biowetter. Mit quiet = true wird still im Hintergrund aufgefrischt. */
+const WEATHER_KEY = 'spiritual-light:weather';
+
+function saveWeather(data) {
+  try { localStorage.setItem(WEATHER_KEY, JSON.stringify({ day: dayKey(), stamp: Date.now(), data })); } catch {}
+}
+
+/** Letzter Wetterstand von heute – damit das Biowetter auch ohne Netz da ist. */
+function lastWeather() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(WEATHER_KEY));
+    return saved?.day === dayKey() && saved.data?.w ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
 async function initBio({ quiet = false } = {}) {
   if (!quiet || !hasWeather) {
     $('#bio').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' })));
   }
   try {
-    renderBio(buildBio(await loadWeather()));
+    const data = await loadWeather();
+    renderBio({ ...buildBio(data), stamp: Date.now() });
+    saveWeather(data);
     weatherLoadedAt = Date.now();
     hasWeather = true;
   } catch (err) {
     console.warn('Biowetter:', err);
-    // Beim stillen Auffrischen bleibt der letzte Stand stehen, statt einer Fehlermeldung
-    if (!quiet || !hasWeather) renderBioError();
+    // Beim stillen Auffrischen bleibt der angezeigte Stand stehen, statt einer Fehlermeldung
+    if (quiet && hasWeather) return;
+    const saved = lastWeather();
+    if (saved) {
+      try {
+        renderBio({ ...buildBio(saved.data), stamp: saved.stamp, offline: true });
+        hasWeather = true;
+        return;
+      } catch {}
+    }
+    renderBioError();
   }
 }
 
@@ -478,11 +528,14 @@ const COVER_TONES = [['#c4e2d1', '#9caf88'], ['#e6ecdc', '#b9c8a4'], ['#ece2cf',
 function bookCard(b, i) {
   const [c1, c2] = COVER_TONES[i % COVER_TONES.length];
   const cover = h('div', { class: 'cover', style: `--c1:${c1};--c2:${c2}` }, h('span', {}, (b.title.match(/[A-Za-zÄÖÜäöü]/) || ['✦'])[0].toUpperCase()));
-  if (b.isbn) {
-    // Titelbild der Deutschen Nationalbibliothek; fehlt es, bleibt der gemalte Einband stehen
-    const img = h('img', { alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' });
-    img.addEventListener('load', () => (img.naturalWidth > 20 ? cover.append(img) : null));
-    img.src = `https://portal.dnb.de/opac/mvb/cover?isbn=${b.isbn}`;
+  if (b.cover) {
+    // Titelbild (beim täglichen Update von der DNB geladen); fehlt es, bleibt der gemalte Einband stehen.
+    // Das Bild muss im Dokument hängen, sonst lädt „lazy“ es nie.
+    const img = h('img', { alt: '', loading: 'lazy', decoding: 'async' });
+    img.addEventListener('load', () => (img.naturalWidth > 20 ? img.classList.add('is-loaded') : img.remove()));
+    img.addEventListener('error', () => img.remove());
+    img.src = b.cover;
+    cover.append(img);
   }
   return h('a', { class: 'card book', href: b.link, target: '_blank', rel: 'noopener noreferrer' },
     cover,
