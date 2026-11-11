@@ -379,7 +379,7 @@ function renderBio(bio) {
           h('p', { class: 'bio-text' }, c.text))),
       h('p', { class: 'note' }, 'Orientierung auf Basis aktueller Wetter- und Luftdaten von ',
         h('a', { href: 'https://open-meteo.com/', target: '_blank', rel: 'noopener' }, 'Open-Meteo'),
-        ' für Jena. Kein Ersatz für ärztlichen Rat.')),
+        ` für Jena. Stand: ${new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })} Uhr, wird stündlich aktualisiert. Kein Ersatz für ärztlichen Rat.`)),
   );
 }
 
@@ -394,7 +394,7 @@ function renderBioError() {
   const msg = h('article', { class: 'card empty' },
     h('div', { html: svg(ICONS.cloud) }),
     h('p', {}, 'Das Biowetter konnte gerade nicht geladen werden. Bitte prüfe deine Internetverbindung.'),
-    h('button', { class: 'more', onclick: initBio }, 'Erneut versuchen'));
+    h('button', { class: 'more', onclick: () => initBio() }, 'Erneut versuchen'));
   $('#bio').replaceChildren(msg);
   $('#home-bio').replaceChildren();
   // Der Mond lässt sich auch ohne Netz berechnen
@@ -404,13 +404,22 @@ function renderBioError() {
       h('div', {}, h('strong', {}, m.name), h('small', {}, `${Math.round(m.lit * 100)} % beleuchtet`))));
 }
 
-async function initBio() {
-  $('#bio').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' })));
+let weatherLoadedAt = 0;
+let hasWeather = false;
+
+/** Lädt Wetter und Biowetter. Mit quiet = true wird still im Hintergrund aufgefrischt. */
+async function initBio({ quiet = false } = {}) {
+  if (!quiet || !hasWeather) {
+    $('#bio').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' })));
+  }
   try {
     renderBio(buildBio(await loadWeather()));
+    weatherLoadedAt = Date.now();
+    hasWeather = true;
   } catch (err) {
     console.warn('Biowetter:', err);
-    renderBioError();
+    // Beim stillen Auffrischen bleibt der letzte Stand stehen, statt einer Fehlermeldung
+    if (!quiet || !hasWeather) renderBioError();
   }
 }
 
@@ -489,7 +498,10 @@ function renderTeasers() {
   $('#home-teasers').replaceChildren(h('div', { class: 'stack' }, parts));
 }
 
+let feedsLoadedAt = 0;
+
 async function initFeeds() {
+  feedsLoadedAt = Date.now();
   const [n, b] = await Promise.allSettled([getJson('data/news.json'), getJson('data/books.json')]);
   news = n.status === 'fulfilled' ? n.value : null;
   books = b.status === 'fulfilled' ? b.value : null;
@@ -547,12 +559,20 @@ function start() {
 
 start();
 
-// Bleibt die App über Nacht offen, gibt es am nächsten Tag automatisch frische Inhalte.
-document.addEventListener('visibilitychange', () => {
+const HOUR = 3600000;
+
+/** Hält die Inhalte frisch: neuer Tag = alles neu, Wetter stündlich, News und Bücher alle paar Stunden. */
+function refresh() {
   if (document.visibilityState !== 'visible') return;
-  if (renderedDay !== dayKey()) start();
-  else renderHeader();
-});
+  if (renderedDay !== dayKey()) return start();
+  renderHeader();
+  if (Date.now() - weatherLoadedAt >= HOUR) initBio({ quiet: true });
+  if (Date.now() - feedsLoadedAt >= 3 * HOUR) initFeeds();
+}
+
+// Beim Zurückkehren in die App und regelmäßig, solange sie offen ist
+document.addEventListener('visibilitychange', refresh);
+setInterval(refresh, 5 * 60000);
 
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
