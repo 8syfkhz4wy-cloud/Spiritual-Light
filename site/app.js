@@ -287,7 +287,7 @@ function moonSvg(m) {
   const outer = waxing ? 1 : 0;
   const inner = m.lit > 0.5 ? outer : 1 - outer;
   const d = `M12 2 A${r} ${r} 0 0 ${outer} 12 22 A${rx.toFixed(2)} ${r} 0 0 ${inner} 12 2Z`;
-  return `<svg viewBox="0 0 24 24" class="moon" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#dfe6d6"/><path d="${d}" fill="#6b8262"/></svg>`;
+  return `<svg viewBox="0 0 24 24" class="moon" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--moon-dark)"/><path d="${d}" fill="var(--moon-lit)"/></svg>`;
 }
 
 // ---------- Wetter & Biowetter ----------
@@ -792,6 +792,45 @@ async function initFeeds() {
   renderBooks();
   renderTeasers();
 }
+
+// ---------- Farbwelt ----------
+
+const THEME_KEY = 'spiritual-light:theme';
+const THEMES = [
+  ['auto', 'Automatisch', 'Salbei, im Dunkelmodus des Handys Abend'],
+  ['hell', 'Hell', ''],
+  ['salbei', 'Salbei', ''],
+  ['abend', 'Abend', ''],
+];
+const THEME_BAR = { hell: '#bcd6c3', salbei: '#a2c4ad', abend: '#1f2923' };
+const darkQuery = matchMedia('(prefers-color-scheme: dark)');
+
+function themePref() {
+  try { return localStorage.getItem(THEME_KEY) || 'auto'; } catch { return 'auto'; }
+}
+
+function applyTheme(pref = themePref()) {
+  const t = pref === 'auto' ? (darkQuery.matches ? 'abend' : 'salbei') : pref;
+  if (t === 'hell') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = t;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_BAR[t]);
+  for (const b of document.querySelectorAll('#theme-picker button')) b.setAttribute('aria-checked', String(b.dataset.theme === pref));
+}
+
+function renderThemePicker() {
+  $('#theme-picker').replaceChildren(
+    h('span', { class: 'eyebrow' }, 'Farbwelt'),
+    h('div', { class: 'theme-options' },
+      THEMES.map(([id, label, hint]) =>
+        h('button', { type: 'button', role: 'radio', 'data-theme': id, title: hint || label, 'aria-checked': 'false',
+          onclick: () => { try { localStorage.setItem(THEME_KEY, id); } catch {} applyTheme(id); } },
+          h('i', { class: `swatch swatch-${id}`, 'aria-hidden': 'true' }), label))),
+  );
+  applyTheme();
+}
+
+darkQuery.addEventListener?.('change', () => themePref() === 'auto' && applyTheme());
+renderThemePicker();
 
 // ---------- Navigation ----------
 

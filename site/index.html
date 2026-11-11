@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Spiritual Light</title>
   <meta name="description" content="Annetts täglicher Begleiter: Biowetter, Spruch und Tipp des Tages, spirituelle News und neue Bücher.">
-  <meta name="theme-color" content="#bcd6c3">
+  <meta name="theme-color" content="#a2c4ad">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Spiritual Light">
@@ -15,6 +15,15 @@
   <link rel="preload" href="fonts/nunito-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/cormorant-garamond-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="styles.css">
+  <script>
+    // Farbwelt sofort setzen (vor dem ersten Bild), damit nichts hell aufblitzt
+    (function () {
+      var t = 'auto';
+      try { t = localStorage.getItem('spiritual-light:theme') || 'auto'; } catch (e) {}
+      if (t === 'auto') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'abend' : 'salbei';
+      if (t !== 'hell') document.documentElement.dataset.theme = t;
+    })();
+  </script>
 </head>
 <body>
   <div class="app">
@@ -37,6 +46,7 @@
         <article class="card tip-card" id="tip"></article>
         <article class="card dish-card" id="dish"></article>
         <div id="home-teasers"></div>
+        <div class="theme-picker" id="theme-picker" role="radiogroup" aria-label="Farbwelt der App"></div>
       </section>
 
       <!-- Biowetter -->
