@@ -497,6 +497,16 @@ button.pill-card { width: 100%; text-align: left; cursor: pointer; }
 .swatch-salbei { background: linear-gradient(135deg, #d9dbc8, #86b096); }
 .swatch-abend { background: linear-gradient(135deg, #2b362f, #4b6b57); }
 
+/* ---------- Signatur ---------- */
+
+.signature {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line);
+  font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 1.25rem;
+  color: var(--sage-deep); letter-spacing: 0.02em;
+}
+.signature svg { width: 18px; height: 18px; color: var(--sage); }
+
 /* ---------- Navigation ---------- */
 
 .tabs {
