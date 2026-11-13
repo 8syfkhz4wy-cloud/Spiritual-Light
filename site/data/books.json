@@ -1,6 +1,16 @@
 {
- "updated": "2026-11-12T17:51:55.540Z",
+ "updated": "2026-11-13T11:02:36.922Z",
  "books": [
+  {
+   "title": "Schumann Frequenz - Der 30-Tage-Reset: Bringen Sie Stress, Schlaf & digitale Reizflut in Balance und finden Sie mit einfachen Routinen innere Ruhe - inkl. Selbstcheck, Atemübungen, Meditationen uvm.",
+   "subtitle": "",
+   "author": "Annika Wedemeyer",
+   "publisher": "Edition Morgentau",
+   "year": "2026",
+   "isbn": "9783694387022",
+   "price": "15,90 €",
+   "link": "https://d-nb.info/1424768136"
+  },
   {
    "title": "Opalia Seelenprofiling - Das Lichtkarten-Set",
    "subtitle": "Ordnungssysteme neu entdecken",
@@ -316,17 +326,6 @@
    "price": "4,00 €",
    "link": "https://d-nb.info/1420663224",
    "cover": "covers/9783912967005.png"
-  },
-  {
-   "title": "Lilith-Aspekte im Horoskop",
-   "subtitle": "eine Quelle von Lust und Lebendigkeit",
-   "author": "Ernst Ott",
-   "publisher": "Chiron Verlag",
-   "year": "2026",
-   "isbn": "9783899972252",
-   "price": "",
-   "link": "https://d-nb.info/1420314653",
-   "cover": "covers/9783899972252.jpg"
   }
  ]
 }
