@@ -798,13 +798,13 @@ async function initFeeds() {
 
 const THEME_KEY = 'spiritual-light:theme';
 const THEMES = [
-  ['auto', 'Automatisch', 'Nach Tageszeit: tagsüber Salbei, in der Dämmerung gedämpft, abends Abend'],
+  ['auto', 'Automatisch', 'Nach Tageszeit: tagsüber Salbei, in der Dämmerung gedämpft, nachts Abend'],
   ['hell', 'Hell', ''],
   ['salbei', 'Salbei', ''],
   ['abend', 'Abend', ''],
 ];
 const THEME_BAR = { hell: '#bcd6c3', salbei: '#a2c4ad', daemmerung: '#8fb39c', abend: '#1f2923' };
-const darkQuery = matchMedia('(prefers-color-scheme: dark)');
+const THEME_NAMES = { hell: 'Hell', salbei: 'Salbei', daemmerung: 'Dämmerung', abend: 'Abend' };
 
 function themePref() {
   try { return localStorage.getItem(THEME_KEY) || 'auto'; } catch { return 'auto'; }
@@ -817,6 +817,15 @@ function applyTheme(pref = themePref()) {
   else document.documentElement.dataset.theme = t;
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_BAR[t]);
   for (const b of document.querySelectorAll('#theme-picker button')) b.setAttribute('aria-checked', String(b.dataset.theme === pref));
+  // Bei „Automatisch“ zeigen, was gerade gilt und wann es wechselt
+  const info = $('#theme-info');
+  if (info) {
+    const next = pref === 'auto' ? window.SL?.nextChange?.(new Date()) : null;
+    const at = next && next.at.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    info.textContent = pref === 'auto'
+      ? `Nach Tageszeit · jetzt ${THEME_NAMES[t]}${next ? ` · ab ${at} Uhr ${THEME_NAMES[next.theme]}` : ''}`
+      : 'Feste Farbwelt – „Automatisch“ passt sich der Tageszeit an';
+  }
 }
 
 function renderThemePicker() {
@@ -827,11 +836,11 @@ function renderThemePicker() {
         h('button', { type: 'button', role: 'radio', 'data-theme': id, title: hint || label, 'aria-checked': 'false',
           onclick: () => { try { localStorage.setItem(THEME_KEY, id); } catch {} applyTheme(id); } },
           h('i', { class: `swatch swatch-${id}`, 'aria-hidden': 'true' }), label))),
+    h('p', { class: 'theme-info', id: 'theme-info' }),
   );
   applyTheme();
 }
 
-darkQuery.addEventListener?.('change', () => themePref() === 'auto' && applyTheme());
 renderThemePicker();
 
 // ---------- Navigation ----------

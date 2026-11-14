@@ -18,7 +18,7 @@ Das Biowetter wird in der App aus aktuellen Wetter-, Luft- und Pollendaten berec
 
 ## Farbwelt
 
-Ganz unten auf der Startseite lässt sich die Farbwelt wählen: **Automatisch** (Standard, nach Tageszeit: tagsüber Salbei, 30 Minuten vor bis 30 Minuten nach Sonnenauf- und -untergang Dämmerung, nachts Abend – die Sonnenzeiten berechnet die App für den Standort; im Dunkelmodus des Handys immer Abend), **Hell**, **Salbei** oder **Abend**. Die Wahl wird auf dem Handy gespeichert. Die Farben stehen als Variablen am Anfang von `site/styles.css`.
+Ganz unten auf der Startseite lässt sich die Farbwelt wählen: **Automatisch** (Standard, nach Tageszeit: tagsüber Salbei, 30 Minuten vor bis 30 Minuten nach Sonnenauf- und -untergang Dämmerung, nachts Abend – die Sonnenzeiten berechnet die App für den Standort; unter den Knöpfen steht, was gerade gilt und wann es wechselt), **Hell**, **Salbei** oder **Abend**. Die Wahl wird auf dem Handy gespeichert. Die Farben stehen als Variablen am Anfang von `site/styles.css`.
 
 ## Geburtstag
 
