@@ -176,21 +176,64 @@ function pickDish(date = new Date()) {
   return pool[(dayNumber(date) * 11 + 5) % pool.length];
 }
 
+// Seit diesem Tag ist die App in Betrieb – ab hier füllt sich das Rezept-Archiv
+const APP_START = new Date(2026, 10, 11);
+
+// Immer mittags rechnen: so bleibt das Gericht den ganzen Tag gleich (auch bei Mondphasen-Grenzen)
+const noon = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate(), 12);
+const dishFor = (date) => (isBirthday(date) ? BIRTHDAY.dish : pickDish(noon(date)));
+
+const recipeBody = (d) =>
+  h('div', { class: 'recipe-body' },
+    h('h4', {}, 'Zutaten'),
+    h('ul', {}, d.ingredients.map((i) => h('li', {}, i))),
+    h('h4', {}, 'Zubereitung'),
+    h('ol', {}, d.steps.map((s) => h('li', {}, s))));
+
+/** Archiv: alle Gerichte der vergangenen Tage, neueste zuerst. Rezepte werden erst beim Aufklappen gebaut. */
+function dishArchive() {
+  const days = [];
+  const today = new Date();
+  for (let d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1); d >= APP_START; d.setDate(d.getDate() - 1)) {
+    days.push(new Date(d));
+  }
+  const archive = h('details', { class: 'recipe archive' },
+    h('summary', {}, `Archiv – frühere Gerichte (${days.length})`));
+  if (!days.length) {
+    archive.append(h('p', { class: 'archive-empty' }, 'Ab morgen findest du hier alle bisherigen Gerichte des Tages.'));
+    return archive;
+  }
+  const list = h('div', { class: 'archive-list' },
+    days.map((date) => {
+      const d = dishFor(date);
+      const entry = h('details', { class: 'archive-item' },
+        h('summary', {},
+          h('span', { class: 'archive-date' }, date.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' })),
+          h('span', { class: 'archive-title' }, d.title),
+          h('span', { class: 'archive-topic' }, d.topic)));
+      entry.addEventListener('toggle', () => {
+        if (entry.open && entry.childElementCount === 1) {
+          entry.append(h('div', { class: 'archive-detail' },
+            h('p', { class: 'dish-meaning' }, d.meaning),
+            h('p', { class: 'dish-meta' }, `${d.time} · ${d.servings} ${d.servings === 1 ? 'Portion' : 'Portionen'}`),
+            recipeBody(d)));
+        }
+      });
+      return entry;
+    }));
+  archive.append(list);
+  return archive;
+}
+
 function renderDish() {
-  const d = isBirthday() ? BIRTHDAY.dish : pickDish();
-  const details = h('details', { class: 'recipe' },
-    h('summary', {}, 'Rezept anzeigen'),
-    h('div', { class: 'recipe-body' },
-      h('h4', {}, 'Zutaten'),
-      h('ul', {}, d.ingredients.map((i) => h('li', {}, i))),
-      h('h4', {}, 'Zubereitung'),
-      h('ol', {}, d.steps.map((s) => h('li', {}, s)))));
+  const d = dishFor(new Date());
   $('#dish').replaceChildren(
     h('div', {}, h('span', { class: 'eyebrow' }, 'Gericht des Tages'), h('span', { class: 'tag' }, d.topic)),
     h('h3', {}, d.title),
     h('p', { class: 'dish-meaning' }, d.meaning),
     h('p', { class: 'dish-meta' }, `${d.time} · ${d.servings} ${d.servings === 1 ? 'Portion' : 'Portionen'}`),
-    details,
+    h('details', { class: 'recipe' }, h('summary', {}, 'Rezept anzeigen'), recipeBody(d)),
+    dishArchive(),
   );
 }
 

@@ -419,18 +419,35 @@ button.pill-card { width: 100%; text-align: left; cursor: pointer; }
 .dish-meaning { font-size: 0.97rem; }
 .dish-meta { font-size: 0.82rem; font-weight: 700; color: var(--sage-deep); margin-top: 10px; }
 .recipe { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 4px; }
-.recipe summary {
+.recipe > summary {
   list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
   padding: 10px 0; font-size: 0.9rem; font-weight: 800; color: var(--sage-deep);
 }
-.recipe summary::-webkit-details-marker { display: none; }
-.recipe summary::after { content: '›'; font-size: 1.2rem; line-height: 1; transition: transform 0.2s; }
-.recipe[open] summary::after { transform: rotate(90deg); }
-.recipe[open] summary { color: var(--forest); }
+.recipe > summary::-webkit-details-marker { display: none; }
+.recipe > summary::after { content: '›'; font-size: 1.2rem; line-height: 1; transition: transform 0.2s; }
+.recipe[open] > summary::after { transform: rotate(90deg); }
+.recipe[open] > summary { color: var(--forest); }
 .recipe-body h4 { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sage-deep); margin: 6px 0 6px; }
 .recipe-body ul, .recipe-body ol { margin: 0 0 12px; padding-left: 1.25rem; font-size: 0.93rem; }
 .recipe-body li { margin-bottom: 4px; }
 .recipe-body li::marker { color: var(--sage); font-weight: 700; }
+.recipe.archive { margin-top: 2px; }
+.archive-empty { font-size: 0.88rem; color: var(--muted); padding: 2px 0 10px; }
+.archive-list { display: grid; gap: 6px; padding-bottom: 6px; }
+.archive-item { background: var(--glass); border: 1px solid var(--line); border-radius: 16px; }
+.archive-item > summary {
+  list-style: none; cursor: pointer; display: grid; grid-template-columns: auto 1fr auto; gap: 2px 10px; align-items: baseline;
+  padding: 10px 12px;
+}
+.archive-item > summary::-webkit-details-marker { display: none; }
+.archive-date { font-size: 0.74rem; font-weight: 800; color: var(--sage-deep); white-space: nowrap; }
+.archive-title { font-family: var(--serif); font-weight: 600; font-size: 1.05rem; color: var(--forest); line-height: 1.2; }
+.archive-item > summary::after { content: '›'; grid-row: 1; grid-column: 3; color: var(--sage); font-size: 1.15rem; transition: transform 0.2s; }
+.archive-item[open] > summary::after { transform: rotate(90deg); }
+.archive-topic { grid-column: 2; font-size: 0.72rem; color: var(--muted); font-weight: 700; }
+.archive-item[open] > summary { border-bottom: 1px solid var(--line); }
+.archive-detail { padding: 10px 12px 2px; }
+.archive-detail .dish-meta { margin: 6px 0 4px; }
 .tag {
   display: inline-block; margin-left: 8px; padding: 3px 10px; border-radius: 999px;
   background: var(--sand); color: var(--tag-ink); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
