@@ -17,8 +17,8 @@
   <link rel="stylesheet" href="styles.css">
   <script>
     // Farbwelt sofort setzen (vor dem ersten Bild), damit nichts hell aufblitzt.
-    // „Automatisch“ richtet sich nach dem Sonnenstand am Standort: tagsüber Salbei,
-    // rund um Sonnenauf- und -untergang Dämmerung, nachts Abend (und immer Abend im Dunkelmodus des Handys).
+    // „Automatisch“ richtet sich nur nach dem Sonnenstand am Standort: tagsüber Salbei,
+    // rund um Sonnenauf- und -untergang Dämmerung, nachts Abend.
     (function () {
       var rad = Math.PI / 180;
       function sunTimes(date, lat, lon) {
@@ -38,19 +38,36 @@
         try { var p = JSON.parse(localStorage.getItem('spiritual-light:place')); if (p && isFinite(p.lat)) return p; } catch (e) {}
         return { lat: 50.927, lon: 11.586 };
       }
+      var HALF = 30 * 60000;
       function autoTheme(now) {
-        if (matchMedia('(prefers-color-scheme: dark)').matches) return 'abend';
-        var p = place(), t = sunTimes(now, p.lat, p.lon), x = now.getTime(), half = 30 * 60000;
-        if (x < t.rise - half || x > t.set + half) return 'abend';
-        if (x < t.rise + half || x > t.set - half) return 'daemmerung';
+        var p = place(), t = sunTimes(now, p.lat, p.lon), x = now.getTime();
+        if (x < t.rise - HALF || x > t.set + HALF) return 'abend';
+        if (x < t.rise + HALF || x > t.set - HALF) return 'daemmerung';
         return 'salbei';
+      }
+      // Wann wechselt die Automatik als Nächstes – und wohin?
+      function nextChange(now) {
+        var p = place(), x = now.getTime(), marks = [];
+        for (var d = 0; d < 2; d++) {
+          var day = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d, 12);
+          var t = sunTimes(day, p.lat, p.lon);
+          marks.push(t.rise - HALF, t.rise + HALF, t.set - HALF, t.set + HALF);
+        }
+        var cur = autoTheme(now);
+        for (var i = 0; i < marks.length; i++) {
+          if (marks[i] > x) {
+            var then = autoTheme(new Date(marks[i] + 60000));
+            if (then !== cur) return { at: new Date(marks[i]), theme: then };
+          }
+        }
+        return null;
       }
       function pick() {
         var t = 'auto';
         try { t = localStorage.getItem('spiritual-light:theme') || 'auto'; } catch (e) {}
         return t === 'auto' ? autoTheme(new Date()) : t;
       }
-      window.SL = { sunTimes: sunTimes, pickTheme: pick };
+      window.SL = { sunTimes: sunTimes, pickTheme: pick, autoTheme: autoTheme, nextChange: nextChange };
       var t = pick();
       if (t !== 'hell') document.documentElement.dataset.theme = t;
     })();
