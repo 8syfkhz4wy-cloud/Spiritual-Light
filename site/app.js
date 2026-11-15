@@ -334,6 +334,7 @@ function renderTip() {
 // ---------- Standort ----------
 
 const PLACE_KEY = 'spiritual-light:place';
+const NO_NAME = 'Dein Standort'; // Ersatz, solange der Ortsname nicht ermittelt werden konnte
 let place = loadPlace() || HOME;
 
 function loadPlace() {
@@ -382,8 +383,8 @@ async function locate() {
   const pos = await getPosition();
   if (!pos) return place;
   const same = place.auto && Math.abs(place.lat - pos.lat) < 0.03 && Math.abs(place.lon - pos.lon) < 0.03;
-  if (same) return place;
-  place = { name: (await placeName(pos.lat, pos.lon)) || 'Dein Standort', ...pos, auto: true };
+  if (same && place.name !== NO_NAME) return place;
+  place = { name: (await placeName(pos.lat, pos.lon)) || NO_NAME, ...pos, auto: true };
   storePlace(place);
   return place;
 }
@@ -504,18 +505,19 @@ function buildBio({ w, air, place: loc = HOME }) {
     const text = level === 0
       ? 'Ruhige Luftdruckverhältnisse – wenig Anlass für Wetterkopfschmerz.'
       : level === 1
-        ? 'Leichte Druckschwankungen. Empfindliche spüren vielleicht einen Hauch im Kopf – ausreichend trinken beugt vor.'
+        ? `${dp3max >= 1.8 || dp24 <= -8 ? 'Leichte Druckschwankungen' : gusts >= 55 ? 'Kräftiger, böiger Wind' : 'Ein deutlicher Temperaturwechsel'}. Empfindliche spüren vielleicht einen Hauch im Kopf – ausreichend trinken beugt vor.`
         : 'Schnelle Wetterwechsel können Kopfschmerz und Migräne begünstigen. Regelmäßig essen, viel trinken, Bildschirmpausen und frische Luft einplanen.';
     cats.push({ id: 'kopf', title: 'Kopf & Migräne', icon: 'bolt', level, text });
   }
 
   // Gelenke & Rheuma
   {
-    let s = temp <= 3 && rh >= 85 ? 3 : temp <= 8 && rh >= 80 ? 2 : temp <= 12 && rh >= 75 ? 1 : 0;
-    if (dp24 <= -6) s += 1;
-    const level = clamp(s);
+    const damp = temp <= 3 && rh >= 85 ? 3 : temp <= 8 && rh >= 80 ? 2 : temp <= 12 && rh >= 75 ? 1 : 0;
+    const level = clamp(damp + (dp24 <= -6 ? 1 : 0));
     const text = level === 0
-      ? 'Trocken-milde Bedingungen – angenehm für Gelenke und Muskeln.'
+      ? (temp <= 8 ? 'Kühl, aber trocken – mit warmer Kleidung angenehm für Gelenke und Muskeln.' : 'Trocken-milde Bedingungen – angenehm für Gelenke und Muskeln.')
+      : damp === 0
+        ? 'Der fallende Luftdruck kann sich in empfindlichen Gelenken melden. Sanfte Bewegung und Wärme tun gut.'
       : level === 1
         ? 'Etwas feucht-kühl. Halte Gelenke warm und bleib in sanfter Bewegung.'
         : 'Nasskaltes Wetter lässt Gelenke und alte Narben oft stärker spüren. Wärme, ein Kirschkernkissen und sanftes Dehnen tun gut.';
@@ -539,16 +541,16 @@ function buildBio({ w, air, place: loc = HOME }) {
 
   // Schlaf & Erholung
   {
-    let s = nightMin >= 20 ? 3 : nightMin >= 17 ? 2 : nightMin >= 15 ? 1 : 0;
-    if (Math.abs(dpNext) >= 6) s += 1;
-    if (gusts >= 60) s += 1;
-    if (moon.nearFull) s += 1;
-    const level = clamp(s);
+    const warm = nightMin >= 20 ? 3 : nightMin >= 17 ? 2 : nightMin >= 15 ? 1 : 0;
+    const restless = (Math.abs(dpNext) >= 6 ? 1 : 0) + (gusts >= 60 ? 1 : 0);
+    const level = clamp(warm + restless + (moon.nearFull ? 1 : 0));
     let text = nightMin >= 17
       ? 'Eine warme Nacht steht bevor. Abends gut durchlüften, leichte Decke, lauwarm duschen.'
-      : level === 0
-        ? 'Gute Voraussetzungen für erholsamen Schlaf. Vor dem Zubettgehen kurz lüften.'
-        : 'Unruhiges Wetter kann den Schlaf leichter machen. Ein festes Abendritual und ein Lavendeltee helfen beim Abschalten.';
+      : restless
+        ? 'Unruhiges Wetter kann den Schlaf leichter machen. Ein festes Abendritual und ein Lavendeltee helfen beim Abschalten.'
+        : warm
+          ? 'Eine milde Nacht steht bevor. Abends gut durchlüften und eine leichtere Decke wählen.'
+          : 'Gute Voraussetzungen für erholsamen Schlaf. Vor dem Zubettgehen kurz lüften.';
     if (moon.nearFull) text += ' Rund um den Vollmond schlafen viele etwas unruhiger.';
     cats.push({ id: 'schlaf', title: 'Schlaf & Erholung', icon: 'moon', level, text });
   }
@@ -562,7 +564,9 @@ function buildBio({ w, air, place: loc = HOME }) {
     const text = level === 0
       ? `Viel Licht heute (${sunTxt}) – das hebt Stimmung und Energie. Nimm so viel davon mit, wie du kannst.`
       : level === 1
-        ? `Eher wenig Licht (${sunTxt}). Ein Spaziergang zur Mittagszeit gleicht das aus.`
+        ? (sunH >= 3
+          ? `Die Tage sind kurz, aber heute zeigt sich die Sonne (${sunTxt}). Nutze die hellen Stunden für einen Gang nach draußen.`
+          : `Eher wenig Licht (${sunTxt}). Ein Spaziergang zur Mittagszeit gleicht das aus.`)
         : `Ein trüber, kurzer Tag (${sunTxt}). Geh trotzdem zur hellsten Stunde raus, mach es dir drinnen mit Kerzen und warmen Farben gemütlich.`;
     cats.push({ id: 'stimmung', title: 'Stimmung & Energie', icon: 'smile', level, text });
   }
@@ -787,7 +791,6 @@ function renderBioError() {
 let weatherLoadedAt = 0;
 let hasWeather = false;
 
-/** Lädt Wetter und Biowetter. Mit quiet = true wird still im Hintergrund aufgefrischt. */
 const WEATHER_KEY = 'spiritual-light:weather';
 
 function saveWeather(data) {
@@ -804,30 +807,55 @@ function lastWeather() {
   }
 }
 
-async function initBio({ quiet = false } = {}) {
+let bioBusy = null;
+
+/**
+ * Lädt Wetter und Biowetter. Mit quiet = true wird still im Hintergrund aufgefrischt.
+ * Gestartet wird sofort mit dem zuletzt bekannten Ort; der Standort wird parallel bestimmt
+ * und das Wetter nur dann ein zweites Mal geladen, wenn er sich geändert hat.
+ */
+function initBio({ quiet = false } = {}) {
+  if (bioBusy) return bioBusy; // läuft schon – nicht doppelt abrufen
+  bioBusy = loadBio(quiet).finally(() => { bioBusy = null; });
+  return bioBusy;
+}
+
+async function showWeatherFor(p) {
+  const data = await loadWeather(p);
+  renderBio({ ...buildBio(data), stamp: Date.now() });
+  saveWeather(data);
+  weatherLoadedAt = Date.now();
+  hasWeather = true;
+}
+
+async function loadBio(quiet) {
   if (!quiet || !hasWeather) {
     $('#bio').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' }), h('div', { class: 'skeleton' })));
   }
+  const before = place;
+  const located = locate().catch(() => place);
   try {
-    const data = await loadWeather(await locate());
-    applyTheme(); // Sonnenzeiten hängen vom (evtl. neuen) Standort ab
-    renderBio({ ...buildBio(data), stamp: Date.now() });
-    saveWeather(data);
-    weatherLoadedAt = Date.now();
-    hasWeather = true;
+    await showWeatherFor(before);
   } catch (err) {
     console.warn('Biowetter:', err);
     // Beim stillen Auffrischen bleibt der angezeigte Stand stehen, statt einer Fehlermeldung
-    if (quiet && hasWeather) return;
-    const saved = lastWeather();
-    if (saved) {
-      try {
-        renderBio({ ...buildBio(saved.data), stamp: saved.stamp, offline: true });
-        hasWeather = true;
-        return;
-      } catch {}
+    if (!(quiet && hasWeather)) {
+      const saved = lastWeather();
+      let shown = false;
+      if (saved) {
+        try {
+          renderBio({ ...buildBio(saved.data), stamp: saved.stamp, offline: true });
+          hasWeather = true;
+          shown = true;
+        } catch {}
+      }
+      if (!shown) renderBioError();
     }
-    renderBioError();
+  }
+  const now = await located;
+  if (now !== before) {
+    applyTheme(); // Sonnenzeiten hängen vom Standort ab
+    try { await showWeatherFor(now); } catch (err) { console.warn('Biowetter (Standort):', err); }
   }
 }
 
@@ -910,15 +938,24 @@ function renderTeasers() {
 }
 
 let feedsLoadedAt = 0;
+let feedsShown = false;
 
 async function initFeeds() {
   feedsLoadedAt = Date.now();
   const [n, b] = await Promise.allSettled([getJson('data/news.json'), getJson('data/books.json')]);
-  news = n.status === 'fulfilled' ? n.value : null;
-  books = b.status === 'fulfilled' ? b.value : null;
-  renderNews();
-  renderBooks();
-  renderTeasers();
+  // Schlägt ein Abruf fehl, bleibt der bisherige Stand stehen; neu gezeichnet wird nur bei neuem Inhalt
+  // (sonst würde die Liste beim Lesen nach oben springen).
+  const first = !feedsShown;
+  const newsNew = n.status === 'fulfilled' && n.value?.updated !== news?.updated;
+  const booksNew = b.status === 'fulfilled' && b.value?.updated !== books?.updated;
+  if (n.status === 'fulfilled') news = n.value;
+  if (b.status === 'fulfilled') books = b.value;
+  feedsShown = true;
+  if (first || newsNew) renderNews();
+  if (first || booksNew) renderBooks();
+  if (first || newsNew || booksNew) renderTeasers();
+  // Nach einem Fehlschlag früher erneut versuchen (in 10 Minuten statt in 3 Stunden)
+  if (n.status !== 'fulfilled' || b.status !== 'fulfilled') feedsLoadedAt = Date.now() - 3 * 3600000 + 10 * 60000;
 }
 
 // ---------- Farbwelt ----------
@@ -939,7 +976,11 @@ function themePref() {
 
 function applyTheme(pref = themePref()) {
   const t = pref === 'auto' ? window.SL?.pickTheme?.() || 'salbei' : pref;
-  if ((document.documentElement.dataset.theme || 'hell') !== t) document.documentElement.classList.add('theme-fade');
+  if ((document.documentElement.dataset.theme || 'hell') !== t) {
+    document.documentElement.classList.add('theme-fade');
+    clearTimeout(applyTheme.fade);
+    applyTheme.fade = setTimeout(() => document.documentElement.classList.remove('theme-fade'), 1500);
+  }
   if (t === 'hell') delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = t;
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_BAR[t]);
@@ -973,6 +1014,7 @@ renderThemePicker();
 // ---------- Navigation ----------
 
 let currentView = 'heute';
+if (history.state?.view) history.replaceState(null, ''); // nach Neuladen beginnt die App auf „Heute“
 
 function showView(name, { push = true } = {}) {
   // Die Zurück-Taste des Handys führt zur Startseite statt die App zu schließen
@@ -1062,6 +1104,6 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   });
   navigator.serviceWorker.register('sw.js').then((reg) => {
     // Beim Zurückkehren in die App nach einer neuen Version schauen
-    document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && reg.update().catch(() => {}));
+    document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && reg?.update().catch(() => {}));
   }).catch(() => {});
 }

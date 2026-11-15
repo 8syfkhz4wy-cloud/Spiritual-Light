@@ -32,7 +32,7 @@ Beim ersten Öffnen fragt die App nach dem Standort. Wird er erlaubt, gelten Wet
 
 - **Wetter und Biowetter:** beim Öffnen der App und stündlich, solange sie offen ist. Ohne Netz zeigt die App den letzten Stand vom selben Tag.
 - **Spruch, Tipp und Gericht:** wechseln um Mitternacht.
-- **News, Bücher und Cover:** der Workflow holt sie jeden Morgen gegen 4–5 Uhr, speichert den neuen Stand in `site/data` und veröffentlicht die App. Die Cover landen nur in der veröffentlichten Seite (`site/covers` ist nicht im Repository).
+- **News, Bücher und Cover:** der Workflow holt sie zweimal täglich (geplant spätabends und nachts; GitHub startet geplante Läufe oft Stunden verspätet), speichert den neuen Stand in `site/data` und veröffentlicht die App. Die Cover landen nur in der veröffentlichten Seite (`site/covers` ist nicht im Repository).
 
 ## Veröffentlichen (einmalig)
 
