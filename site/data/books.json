@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-15T10:57:51.090Z",
+ "updated": "2026-11-15T18:56:42.611Z",
  "books": [
   {
    "title": "Schumann Frequenz - Der 30-Tage-Reset: Bringen Sie Stress, Schlaf & digitale Reizflut in Balance und finden Sie mit einfachen Routinen innere Ruhe - inkl. Selbstcheck, Atemübungen, Meditationen uvm.",
@@ -9,7 +9,8 @@
    "year": "2026",
    "isbn": "9783694387022",
    "price": "15,90 €",
-   "link": "https://d-nb.info/1424768136"
+   "link": "https://d-nb.info/1424768136",
+   "cover": "covers/9783694387022.jpg"
   },
   {
    "title": "Opalia Seelenprofiling - Das Lichtkarten-Set",
