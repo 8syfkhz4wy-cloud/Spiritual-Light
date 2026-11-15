@@ -100,8 +100,8 @@ export const TIPS = [
 
 // Gericht des Tages: vegetarische Rezepte mit spiritueller Bedeutung.
 // time = Zubereitungszeit, servings = Portionen.
-// season = nur an diesen Tagen (Monat-Tag, von–bis), z. B. rund um ein Jahreskreisfest.
-// moon = 'full' / 'new': nur rund um Vollmond bzw. Neumond.
+// season = nur an diesen Tagen (Monat-Tag, von–bis) – hier jeweils genau der Festtag.
+// moon = 'full' / 'new': nur am Tag des Vollmonds bzw. Neumonds.
 // Gerichte ohne season/moon wechseln sich an allen übrigen Tagen ab.
 export const DISHES = [
   { topic: 'Wurzelchakra', title: 'Erdende Rote-Bete-Suppe', meaning: 'Rote Wurzelgemüse stärken das Wurzelchakra – sie geben Halt, Sicherheit und das Gefühl, angekommen zu sein.', time: '40 Min.', servings: 2,
@@ -149,25 +149,25 @@ export const DISHES = [
   { topic: 'Erdung', title: 'Waldpilz-Risotto', meaning: 'Pilze wachsen im Verborgenen und verbinden die Bäume des Waldes. Sie erinnern an das unsichtbare Netz, das alles Leben trägt.', time: '35 Min.', servings: 2,
     ingredients: ['160 g Risottoreis', '250 g Pilze (Champignons, Kräuterseitlinge)', '1 Schalotte', '100 ml Weißwein oder Brühe', '700 ml heiße Gemüsebrühe', '30 g Parmesan', '1 EL Butter', 'Thymian'],
     steps: ['Pilze scharf anbraten und beiseitestellen.', 'Schalotte andünsten, Reis glasig werden lassen, mit Wein ablöschen.', 'Nach und nach Brühe zugeben und 18 Minuten rühren. Pilze, Butter, Parmesan und Thymian unterheben.'] },
-  { topic: 'Rauhnächte', title: 'Rauhnacht-Bratapfel', season: [['12-24', '12-26'], ['12-31', '01-01'], ['01-05', '01-06']], meaning: 'Der Bratapfel ist ein altes Wintersymbol für Fülle und Wärme im Dunkeln. Fülle ihn mit dem, was du ins neue Jahr tragen möchtest.', time: '35 Min.', servings: 2,
+  { topic: 'Rauhnächte', title: 'Rauhnacht-Bratapfel', season: [['12-24', '12-24']], meaning: 'Der Bratapfel ist ein altes Wintersymbol für Fülle und Wärme im Dunkeln. Fülle ihn mit dem, was du ins neue Jahr tragen möchtest.', time: '35 Min.', servings: 2,
     ingredients: ['2 große Äpfel (Boskop)', '2 EL gehackte Walnüsse', '1 EL Rosinen', '1 TL Honig', '½ TL Zimt', '1 Prise Nelkenpulver', 'Vanillesoße nach Belieben'],
     steps: ['Kerngehäuse ausstechen.', 'Nüsse, Rosinen, Honig und Gewürze mischen und in die Äpfel füllen.', 'Bei 180 °C 25 Minuten backen und warm genießen.'] },
-  { topic: 'Jahreskreis', title: 'Samhain-Kürbis aus dem Ofen', season: [['10-30', '11-01']], meaning: 'Zum Fest der Ahnen wird geehrt, was war. Der gefüllte Kürbis steht für die Ernte des Jahres und Dankbarkeit.', time: '50 Min.', servings: 2,
+  { topic: 'Jahreskreis', title: 'Samhain-Kürbis aus dem Ofen', season: [['10-31', '10-31']], meaning: 'Zum Fest der Ahnen wird geehrt, was war. Der gefüllte Kürbis steht für die Ernte des Jahres und Dankbarkeit.', time: '50 Min.', servings: 2,
     ingredients: ['1 kleiner Hokkaido', '100 g Couscous oder Hirse', '1 Apfel', '50 g Feta', '1 Handvoll Cranberrys', '2 EL Kürbiskerne', 'Rosmarin, Salz, Pfeffer'],
     steps: ['Kürbis halbieren, entkernen und mit Öl 20 Minuten bei 200 °C vorbacken.', 'Couscous garen, mit Apfelwürfeln, Feta, Cranberrys und Rosmarin mischen.', 'In die Kürbishälften füllen und weitere 15 Minuten backen.'] },
-  { topic: 'Jahreskreis', title: 'Imbolc-Lichtbrot mit Honigbutter', season: [['01-31', '02-02']], meaning: 'An Imbolc kehrt das Licht zurück. Helles Brot und Milchprodukte ehren die erwachende Kraft der Natur.', time: '20 Min. + 25 Min. Backen', servings: 4,
+  { topic: 'Jahreskreis', title: 'Imbolc-Lichtbrot mit Honigbutter', season: [['02-01', '02-01']], meaning: 'An Imbolc kehrt das Licht zurück. Helles Brot und Milchprodukte ehren die erwachende Kraft der Natur.', time: '20 Min. + 25 Min. Backen', servings: 4,
     ingredients: ['500 g Weizen- oder Dinkelmehl', '1 Päckchen Trockenhefe', '300 ml lauwarme Milch', '40 g Butter', '1 TL Salz', '1 EL Honig', 'Für die Honigbutter: Butter, Honig, Meersalz'],
     steps: ['Teig aus allen Zutaten kneten und 1 Stunde gehen lassen.', 'Zu einem Zopf oder einer Sonne formen, bei 200 °C 25 Minuten backen.', 'Warm mit Honigbutter servieren und eine Kerze dazu anzünden.'] },
-  { topic: 'Jahreskreis', title: 'Beltane-Blütensalat', season: [['04-30', '05-02']], meaning: 'Beltane feiert die volle Blüte des Lebens. Essbare Blüten bringen Freude, Leichtigkeit und Frühlingsfreude auf den Teller.', time: '15 Min.', servings: 2,
+  { topic: 'Jahreskreis', title: 'Beltane-Blütensalat', season: [['05-01', '05-01']], meaning: 'Beltane feiert die volle Blüte des Lebens. Essbare Blüten bringen Freude, Leichtigkeit und Frühlingsfreude auf den Teller.', time: '15 Min.', servings: 2,
     ingredients: ['2 Handvoll junge Salatblätter', 'Essbare Blüten (Gänseblümchen, Veilchen, Kapuzinerkresse)', '1 Handvoll Radieschen', '2 EL Sonnenblumenkerne', 'Dressing: Leinöl, Apfelessig, Honig, Senf'],
     steps: ['Salat und Radieschen waschen und schneiden.', 'Dressing anrühren und unter den Salat heben.', 'Blüten und Kerne zum Schluss darüber streuen.'] },
-  { topic: 'Jahreskreis', title: 'Mittsommer-Erdbeersalat', season: [['06-20', '06-22']], meaning: 'Zur Sommersonnenwende steht die Sonne am höchsten. Rote Früchte feiern Fülle, Liebe und die Kraft des Lichts.', time: '10 Min.', servings: 2,
+  { topic: 'Jahreskreis', title: 'Mittsommer-Erdbeersalat', season: [['06-21', '06-21']], meaning: 'Zur Sommersonnenwende steht die Sonne am höchsten. Rote Früchte feiern Fülle, Liebe und die Kraft des Lichts.', time: '10 Min.', servings: 2,
     ingredients: ['250 g Erdbeeren', '1 Handvoll Rucola', '125 g Mozzarella', 'Ein paar Minzblätter', '1 EL Balsamico', '1 EL Olivenöl', 'Schwarzer Pfeffer'],
     steps: ['Erdbeeren vierteln, Mozzarella zupfen.', 'Mit Rucola und Minze anrichten.', 'Mit Balsamico, Öl und frischem Pfeffer beträufeln.'] },
-  { topic: 'Jahreskreis', title: 'Lammas-Erntebrot mit Kräutern', season: [['07-31', '08-02']], meaning: 'Lammas ist das Fest des ersten Korns. Wer Brot backt, dankt dem Getreide und dem Sommer für seine Gaben.', time: '20 Min. + 40 Min. Backen', servings: 4,
+  { topic: 'Jahreskreis', title: 'Lammas-Erntebrot mit Kräutern', season: [['08-01', '08-01']], meaning: 'Lammas ist das Fest des ersten Korns. Wer Brot backt, dankt dem Getreide und dem Sommer für seine Gaben.', time: '20 Min. + 40 Min. Backen', servings: 4,
     ingredients: ['500 g Dinkelmehl', '1 Päckchen Trockenhefe', '350 ml lauwarmes Wasser', '1 TL Salz', '2 EL Olivenöl', '2 EL gehackte Kräuter (Rosmarin, Thymian)', '1 Handvoll Sonnenblumenkerne'],
     steps: ['Alle Zutaten zu einem weichen Teig verkneten, 1 Stunde gehen lassen.', 'Zu einem runden Laib formen, oben kreuzweise einschneiden.', 'Bei 220 °C 40 Minuten backen und das erste Stück der Erde schenken.'] },
-  { topic: 'Jahreskreis', title: 'Mabon-Apfel-Nuss-Salat', season: [['09-21', '09-23']], meaning: 'Zur Herbst-Tagundnachtgleiche stehen Licht und Dunkel im Gleichgewicht. Äpfel und Nüsse danken für die reiche Ernte.', time: '15 Min.', servings: 2,
+  { topic: 'Jahreskreis', title: 'Mabon-Apfel-Nuss-Salat', season: [['09-22', '09-22']], meaning: 'Zur Herbst-Tagundnachtgleiche stehen Licht und Dunkel im Gleichgewicht. Äpfel und Nüsse danken für die reiche Ernte.', time: '15 Min.', servings: 2,
     ingredients: ['2 Äpfel', '1 Handvoll Feldsalat', '50 g Walnüsse', '50 g Ziegenkäse', '1 EL Honig', '2 EL Walnussöl', '1 EL Apfelessig'],
     steps: ['Äpfel in feine Spalten schneiden.', 'Walnüsse mit Honig in der Pfanne karamellisieren.', 'Mit Feldsalat und Ziegenkäse anrichten und mit Öl und Essig beträufeln.'] },
   { topic: 'Reinigung', title: 'Klare Ingwer-Miso-Brühe', meaning: 'Eine klare Brühe reinigt Körper und Geist. Ideal nach unruhigen Tagen, um wieder bei dir anzukommen.', time: '20 Min.', servings: 2,

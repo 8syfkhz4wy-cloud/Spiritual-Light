@@ -169,7 +169,10 @@ const inSeason = (ranges, md) => ranges.some(([from, to]) => (from <= to ? md >=
 function pickDish(date = new Date()) {
   const md = `${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
   const moon = moonInfo(date);
-  const phase = moon.nearFull ? 'full' : moon.f < 0.04 || moon.f > 0.96 ? 'new' : null;
+  // Mondgerichte nur an dem einen Tag, dessen Mittag dem Voll- bzw. Neumond am nächsten liegt
+  const fromFull = Math.abs(moon.f - 0.5) * 29.530588853;
+  const fromNew = Math.min(moon.f, 1 - moon.f) * 29.530588853;
+  const phase = fromFull <= 0.5 ? 'full' : fromNew <= 0.5 ? 'new' : null;
   const special = DISHES.find((d) => d.season && inSeason(d.season, md)) || (phase && DISHES.find((d) => d.moon === phase));
   if (special) return special;
   const pool = DISHES.filter((d) => !d.season && !d.moon);
