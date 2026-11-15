@@ -1,5 +1,5 @@
 // Service Worker: macht die App installierbar und offline nutzbar.
-const CACHE = 'spiritual-light-v16';
+const CACHE = 'spiritual-light-v17';
 const SHELL = [
   './',
   'index.html',
@@ -17,7 +17,12 @@ const SHELL = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // „reload“: frisch vom Server holen, nicht aus dem Browser-Cache – sonst könnte eine alte Datei in die neue Version rutschen
+  event.waitUntil(
+    caches.open(CACHE)
+      .then((c) => c.addAll(SHELL.map((url) => new Request(url, { cache: 'reload' }))))
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -29,11 +34,11 @@ self.addEventListener('activate', (event) => {
 });
 
 // Erst das Netz fragen (frische Inhalte), bei fehlender Verbindung den letzten Stand zeigen.
-async function networkFirst(request, fresh) {
+async function networkFirst(request) {
   const cache = await caches.open(CACHE);
   try {
-    // Eigene Dateien immer beim Server nachfragen (statt bis zu 10 Min. aus dem Browser-Cache)
-    const res = await fetch(request, fresh ? { cache: 'no-cache' } : undefined);
+    // Immer beim Server nachfragen (statt bis zu 10 Min. aus dem Browser-Cache)
+    const res = await fetch(request, { cache: 'no-cache' });
     if (res.ok) cache.put(request, res.clone());
     return res;
   } catch (err) {
@@ -47,7 +52,7 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  const sameOrigin = url.origin === self.location.origin;
-  const isWeather = url.hostname.endsWith('open-meteo.com');
-  if (sameOrigin || isWeather) event.respondWith(networkFirst(request, sameOrigin));
+  // Nur die eigenen Dateien. Wetterdaten bewusst nicht: Ein alter Stand würde offline wie das
+  // Wetter von heute aussehen – dafür merkt sich die App selbst den letzten Stand des Tages.
+  if (url.origin === self.location.origin) event.respondWith(networkFirst(request));
 });
