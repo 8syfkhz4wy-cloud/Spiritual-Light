@@ -8,7 +8,7 @@ Annetts täglicher Begleiter fürs Android-Smartphone – eine installierbare We
 | --- | --- | --- |
 | **Spruch des Tages** | jeden Tag ein anderer spiritueller Spruch | `site/content.js` |
 | **Tipp des Tages** | jeden Tag ein kleiner Impuls für Achtsamkeit und Wohlbefinden | `site/content.js` |
-| **Gericht des Tages** | vegetarisches Rezept mit spiritueller Bedeutung; an Jahreskreisfesten, Vollmond und Neumond das passende Gericht | `site/content.js` |
+| **Gericht des Tages** | vegetarisches Rezept mit spiritueller Bedeutung; am Tag eines Jahreskreisfests, Vollmonds oder Neumonds das passende Gericht (jeweils nur an diesem einen Tag) | `site/content.js` |
 | **Wetter** | aktuelles Wetter, die nächsten 24 Stunden, Tagesdetails (Regen, Wind, Luftdruck, Sonne) und 7-Tage-Vorhersage – Wetterkachel auf der Startseite antippen | live von [Open-Meteo](https://open-meteo.com/) |
 | **Biowetter** | 8 Kategorien für den aktuellen Standort (sonst Jena): Kreislauf, Kopf & Migräne, Gelenke & Rheuma, Atemwege, Schlaf, Stimmung, Pollen, Sonne & Haut – dazu die Mondphase | live von [Open-Meteo](https://open-meteo.com/) |
 | **News** | Deutschland (newslichter, SEIN, Yoga Aktuell, Spirit Online) und Jena & Thüringen | RSS, täglich aktualisiert |
