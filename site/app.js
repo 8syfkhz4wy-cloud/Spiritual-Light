@@ -190,7 +190,89 @@ const recipeBody = (d) =>
     h('h4', {}, 'Zubereitung'),
     h('ol', {}, d.steps.map((s) => h('li', {}, s))));
 
-/** Archiv: alle Gerichte der vergangenen Tage, neueste zuerst. Rezepte werden erst beim Aufklappen gebaut. */
+// ---------- Favoriten (werden auf dem Handy gespeichert) ----------
+
+const FAV_KEY = 'spiritual-light:favorite-dishes';
+const ALL_DISHES = [...DISHES, BIRTHDAY.dish];
+
+function loadFavs() {
+  try {
+    const v = JSON.parse(localStorage.getItem(FAV_KEY));
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+}
+let favs = loadFavs();
+const isFav = (d) => favs.includes(d.title);
+
+function toggleFav(d) {
+  favs = isFav(d) ? favs.filter((t) => t !== d.title) : [d.title, ...favs];
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch {}
+  // alle Sterne dieses Gerichts und die Favoriten-Liste aktualisieren, ohne offene Rezepte zu schließen
+  for (const b of document.querySelectorAll('.fav-star')) {
+    if (b.dataset.dish === d.title) setStar(b, isFav(d));
+  }
+  updateFavList();
+}
+
+function setStar(btn, on) {
+  btn.classList.toggle('is-on', on);
+  btn.setAttribute('aria-pressed', String(on));
+  btn.setAttribute('aria-label', on ? 'Aus Favoriten entfernen' : 'Als Favorit merken');
+  btn.textContent = on ? '★' : '☆';
+}
+
+function starButton(d) {
+  const btn = h('button', { type: 'button', class: 'fav-star', 'data-dish': d.title });
+  btn.addEventListener('click', (e) => {
+    e.preventDefault(); // nicht gleichzeitig das Rezept auf- oder zuklappen
+    e.stopPropagation();
+    toggleFav(d);
+  });
+  setStar(btn, isFav(d));
+  return btn;
+}
+
+const dishMeta = (d) => `${d.time} · ${d.servings} ${d.servings === 1 ? 'Portion' : 'Portionen'}`;
+
+/** Aufklappbarer Eintrag (Archiv und Favoriten); das Rezept wird erst beim Öffnen gebaut. */
+function dishEntry(d, dateLabel) {
+  const entry = h('details', { class: 'archive-item' },
+    h('summary', {},
+      h('span', { class: 'archive-date' }, dateLabel || ''),
+      h('span', { class: 'archive-title' }, d.title),
+      starButton(d),
+      h('span', { class: 'archive-topic' }, d.topic)));
+  entry.addEventListener('toggle', () => {
+    if (entry.open && entry.childElementCount === 1) {
+      entry.append(h('div', { class: 'archive-detail' },
+        h('p', { class: 'dish-meaning' }, d.meaning),
+        h('p', { class: 'dish-meta' }, dishMeta(d)),
+        recipeBody(d)));
+    }
+  });
+  return entry;
+}
+
+function favSection() {
+  return h('details', { class: 'recipe favorites', id: 'fav-section' },
+    h('summary', {}, h('span', { class: 'fav-head' }, '★'), ' Favoriten ', h('span', { id: 'fav-count' })),
+    h('div', { class: 'archive-list', id: 'fav-list' }));
+}
+
+function updateFavList() {
+  const list = $('#fav-list');
+  if (!list) return;
+  const dishes = favs.map((t) => ALL_DISHES.find((d) => d.title === t)).filter(Boolean);
+  $('#fav-count').textContent = `(${dishes.length})`;
+  list.replaceChildren(...(dishes.length
+    ? dishes.map((d) => dishEntry(d))
+    : [h('p', { class: 'archive-empty' }, 'Tippe beim Gericht des Tages oder im Archiv auf den Stern ☆, dann sammelt sich hier deine Lieblingsküche.')]));
+}
+
+// ---------- Archiv, nach Monaten gruppiert ----------
+
 function dishArchive() {
   const days = [];
   const today = new Date();
@@ -203,38 +285,40 @@ function dishArchive() {
     archive.append(h('p', { class: 'archive-empty' }, 'Ab morgen findest du hier alle bisherigen Gerichte des Tages.'));
     return archive;
   }
-  const list = h('div', { class: 'archive-list' },
-    days.map((date) => {
-      const d = dishFor(date);
-      const entry = h('details', { class: 'archive-item' },
-        h('summary', {},
-          h('span', { class: 'archive-date' }, date.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short' })),
-          h('span', { class: 'archive-title' }, d.title),
-          h('span', { class: 'archive-topic' }, d.topic)));
-      entry.addEventListener('toggle', () => {
-        if (entry.open && entry.childElementCount === 1) {
-          entry.append(h('div', { class: 'archive-detail' },
-            h('p', { class: 'dish-meaning' }, d.meaning),
-            h('p', { class: 'dish-meta' }, `${d.time} · ${d.servings} ${d.servings === 1 ? 'Portion' : 'Portionen'}`),
-            recipeBody(d)));
-        }
-      });
-      return entry;
-    }));
-  archive.append(list);
+  const months = new Map();
+  for (const date of days) {
+    const key = `${date.getFullYear()}-${date.getMonth()}`;
+    if (!months.has(key)) months.set(key, []);
+    months.get(key).push(date);
+  }
+  let first = true;
+  const groups = [...months.values()].map((dates) => {
+    const label = dates[0].toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+    const group = h('details', { class: 'month-group', ...(first ? { open: '' } : {}) },
+      h('summary', {}, h('span', {}, label), h('span', { class: 'month-count' }, `${dates.length} ${dates.length === 1 ? 'Gericht' : 'Gerichte'}`)),
+      h('div', { class: 'archive-list' },
+        dates.map((date) => dishEntry(dishFor(date), date.toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric' })))));
+    first = false;
+    return group;
+  });
+  archive.append(h('div', { class: 'month-list' }, groups));
   return archive;
 }
 
 function renderDish() {
   const d = dishFor(new Date());
   $('#dish').replaceChildren(
-    h('div', {}, h('span', { class: 'eyebrow' }, 'Gericht des Tages'), h('span', { class: 'tag' }, d.topic)),
+    h('div', { class: 'dish-top' },
+      h('div', {}, h('span', { class: 'eyebrow' }, 'Gericht des Tages'), h('span', { class: 'tag' }, d.topic)),
+      starButton(d)),
     h('h3', {}, d.title),
     h('p', { class: 'dish-meaning' }, d.meaning),
-    h('p', { class: 'dish-meta' }, `${d.time} · ${d.servings} ${d.servings === 1 ? 'Portion' : 'Portionen'}`),
+    h('p', { class: 'dish-meta' }, dishMeta(d)),
     h('details', { class: 'recipe' }, h('summary', {}, 'Rezept anzeigen'), recipeBody(d)),
+    favSection(),
     dishArchive(),
   );
+  updateFavList();
 }
 
 function renderTip() {
