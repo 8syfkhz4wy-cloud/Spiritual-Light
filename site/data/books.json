@@ -1,6 +1,28 @@
 {
- "updated": "2026-11-18T03:08:20.303Z",
+ "updated": "2026-11-23T17:20:11.037Z",
  "books": [
+  {
+   "title": "Voraussagen für 2027",
+   "subtitle": "",
+   "author": "Raymond A. Merriman, Cosima Linggi",
+   "publisher": "Astrodata",
+   "year": "2026",
+   "isbn": "9783906881195",
+   "price": "69,00 €",
+   "link": "https://d-nb.info/1425368913",
+   "cover": "covers/9783906881195.jpg"
+  },
+  {
+   "title": "Opalia Seelenprofiling - Das Lichtkarten-Set",
+   "subtitle": "Ordnungssysteme neu entdecken",
+   "author": "Sabine Guhr-Biermann",
+   "publisher": "Libellen-Verlag",
+   "year": "2026",
+   "isbn": "9783947232499",
+   "price": "14,00 €",
+   "link": "https://d-nb.info/1425271936",
+   "cover": "covers/9783947232499.png"
+  },
   {
    "title": "Schumann Frequenz - Der 30-Tage-Reset: Bringen Sie Stress, Schlaf & digitale Reizflut in Balance und finden Sie mit einfachen Routinen innere Ruhe - inkl. Selbstcheck, Atemübungen, Meditationen uvm.",
    "subtitle": "",
@@ -13,15 +35,14 @@
    "cover": "covers/9783694387022.jpg"
   },
   {
-   "title": "Opalia Seelenprofiling - Das Lichtkarten-Set",
-   "subtitle": "Ordnungssysteme neu entdecken",
-   "author": "Sabine Guhr-Biermann",
-   "publisher": "Libellen-Verlag",
+   "title": "Das unsichtbare fühlen",
+   "subtitle": "deine mediale Reise mit Sitting in the power",
+   "author": "Ben Ballenberger",
+   "publisher": "Mediumism - Ben Ballenberger c/o Autorenglück #71906",
    "year": "2026",
-   "isbn": "9783934982277",
-   "price": "14,00 €",
-   "link": "https://d-nb.info/1424433312",
-   "cover": "covers/9783934982277.png"
+   "isbn": "9798181918283",
+   "price": "",
+   "link": "https://d-nb.info/1424578817"
   },
   {
    "title": "Quantensuppe",
@@ -305,28 +326,6 @@
    "price": "",
    "link": "https://d-nb.info/1420728717",
    "cover": "covers/9783945470329.jpg"
-  },
-  {
-   "title": "Jedermann sofort Hypnotiseur!",
-   "subtitle": "Die Suggestion; Geschichte des Hypnotismus; Anweisung zum Hypnotisieren; Die Erscheinungen der Hypnose; Die hypnotische Suggestion …",
-   "author": "Reinhold Weise, Mariana von Strom",
-   "publisher": "Oldtimertools Verlag",
-   "year": "2026",
-   "isbn": "9783989792418",
-   "price": "29,95 €",
-   "link": "https://d-nb.info/1420664328",
-   "cover": "covers/9783989792418.jpg"
-  },
-  {
-   "title": "Endlich Frieden",
-   "subtitle": "wie Weihnachten die Ruhe bringt, nach der wir uns sehnen",
-   "author": "Sam Chan",
-   "publisher": "Tenet",
-   "year": "2026",
-   "isbn": "9783912967005",
-   "price": "4,00 €",
-   "link": "https://d-nb.info/1420663224",
-   "cover": "covers/9783912967005.png"
   }
  ]
 }
