@@ -921,7 +921,8 @@ function renderBooks() {
   const box = $('#books');
   if (!books?.books?.length) return box.replaceChildren(emptyCard('Die Buchtipps konnten gerade nicht geladen werden.'));
   box.replaceChildren(h('div', { class: 'stack' }, books.books.map(bookCard),
-    h('p', { class: 'note' }, 'Neuerscheinungen aus dem Katalog der Deutschen Nationalbibliothek. Antippen öffnet den Katalogeintrag.')));
+    h('p', { class: 'note' }, 'Neuerscheinungen aus dem Katalog der Deutschen Nationalbibliothek. Antippen öffnet den Katalogeintrag.'),
+    updatedNote(books.updated)));
 }
 
 function renderTeasers() {

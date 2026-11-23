@@ -11,6 +11,13 @@ const SITE_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '
 const DATA_DIR = path.join(SITE_DIR, 'data');
 const COVER_DIR = path.join(SITE_DIR, 'covers');
 const UA = 'Mozilla/5.0 (compatible; SpiritualLight/1.0; feed reader)';
+// Die Deutsche Nationalbibliothek weist Anfragen von Cloud-Servern teils ab (HTTP 403), vor allem mit
+// Browser-Kennung. Darum für die DNB eine schlichte, offene Kennung und – falls nötig – die zweite als Ersatz.
+const DNB_AGENTS = ['SpiritualLight/1.0 (+https://8syfkhz4wy-cloud.github.io/Spiritual-Light/; Buchtipps)', UA];
+const IN_ACTIONS = !!process.env.GITHUB_ACTIONS;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Warnung, die im GitHub-Protokoll gelb hervorgehoben wird
+const warn = (msg) => console.warn(IN_ACTIONS ? `::warning::${msg}` : `  ! ${msg}`);
 
 // ---------- Quellen ----------
 
@@ -45,19 +52,24 @@ const BLOCK_RE = /haschisch|cannabis|cbd|casino|krypto|bitcoin|wettanbieter|spor
 
 // ---------- Hilfen ----------
 
-async function fetchText(url, tries = 2) {
+async function fetchText(url, tries = 2, agent = UA) {
   let lastErr;
   for (let i = 0; i < tries; i++) {
     try {
       const res = await fetch(url, {
-        headers: { 'User-Agent': UA, Accept: 'application/rss+xml, application/xml, text/xml, */*' },
+        headers: { 'User-Agent': agent, Accept: 'application/rss+xml, application/xml, text/xml, */*' },
         signal: AbortSignal.timeout(30000),
         redirect: 'follow',
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const err = new Error(`HTTP ${res.status}`);
+        err.status = res.status;
+        throw err;
+      }
       return await res.text();
     } catch (err) {
       lastErr = err;
+      if (i < tries - 1) await sleep(err.status === 403 || err.status === 429 ? 8000 : 1500);
     }
   }
   throw lastErr;
@@ -145,7 +157,7 @@ async function loadGermany() {
     }),
   );
   results.forEach((r, i) => {
-    if (r.status === 'rejected') console.warn(`  ! ${GERMANY_FEEDS[i].source}: ${r.reason?.message}`);
+    if (r.status === 'rejected') warn(`News-Quelle ${GERMANY_FEEDS[i].source}: ${r.reason?.message}`);
     else console.log(`  ✓ ${GERMANY_FEEDS[i].source}: ${r.value.length} Beiträge`);
   });
   const ok = results.filter((r) => r.status === 'fulfilled').map((r) => r.value);
@@ -157,7 +169,7 @@ async function loadJena() {
   const results = await Promise.allSettled(JENA_FEEDS.map(async (f) => parseRss(await fetchText(f.url))));
   const ok = results.filter((r) => r.status === 'fulfilled').map((r) => r.value);
   results.forEach((r, i) => {
-    if (r.status === 'rejected') console.warn(`  ! Region-Suche ${i + 1}: ${r.reason?.message}`);
+    if (r.status === 'rejected') warn(`Region-Suche ${i + 1}: ${r.reason?.message}`);
   });
   if (!ok.length) return null;
   const cutoff = Date.now() - 120 * 86400000;
@@ -182,13 +194,32 @@ async function loadJena() {
 
 // ---------- Bücher (Deutsche Nationalbibliothek, SRU) ----------
 
+let dnbAgent = 0; // welche Kennung zuletzt funktioniert hat
+
+/** Eine Seite von der DNB holen – bei Abweisung mit der anderen Kennung erneut versuchen. */
+async function dnbFetch(url) {
+  let lastErr;
+  for (let k = 0; k < DNB_AGENTS.length; k++) {
+    const idx = (dnbAgent + k) % DNB_AGENTS.length;
+    try {
+      const xml = await fetchText(url, 2, DNB_AGENTS[idx]);
+      dnbAgent = idx;
+      return xml;
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
+}
+
 async function dnbQuery(query, max = 800) {
   const records = [];
   for (let start = 1; start <= max; start += 100) {
     const url =
       'https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve&recordSchema=oai_dc' +
       `&maximumRecords=100&startRecord=${start}&query=${encodeURIComponent(query)}`;
-    const xml = await fetchText(url);
+    if (start > 1) await sleep(400); // rücksichtsvoll: nicht zu schnell hintereinander
+    const xml = await dnbFetch(url);
     const total = parseInt(tag(xml, 'numberOfRecords'), 10) || 0;
     for (const m of xml.matchAll(/<dc\s[\s\S]*?<\/dc>/g)) records.push(m[0]);
     if (start + 99 >= total) break;
@@ -240,9 +271,13 @@ async function loadBooks() {
     `sgt=130 and (${yearQ}) and mat=books and spr=ger`,
     `(sw=Spiritualität or sw=Esoterik or sw=Meditation or sw=Achtsamkeit) and (${yearQ}) and mat=books and spr=ger`,
   ];
-  const results = await Promise.allSettled(queries.map((q) => dnbQuery(q)));
+  // nacheinander statt gleichzeitig – die DNB reagiert auf viele parallele Abrufe empfindlich
+  const results = [];
+  for (const q of queries) {
+    results.push(await dnbQuery(q).then((value) => ({ status: 'fulfilled', value }), (reason) => ({ status: 'rejected', reason })));
+  }
   results.forEach((r, i) => {
-    if (r.status === 'rejected') console.warn(`  ! DNB-Abfrage ${i + 1}: ${r.reason?.message}`);
+    if (r.status === 'rejected') warn(`DNB-Abfrage ${i + 1} fehlgeschlagen: ${r.reason?.message} – die Bücherliste bleibt auf dem letzten Stand`);
     else console.log(`  ✓ DNB-Abfrage ${i + 1}: ${r.value.length} Datensätze`);
   });
   const recs = results.filter((r) => r.status === 'fulfilled').flatMap((r) => r.value);
