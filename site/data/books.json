@@ -1,6 +1,17 @@
 {
- "updated": "2026-11-26T03:45:29.045Z",
+ "updated": "2026-11-26T12:39:36.956Z",
  "books": [
+  {
+   "title": "Der Tinnitus-Code",
+   "subtitle": "Die 7 Schlüssel, um deinen Tinnitus zu verstehen und gezielt zu behandeln",
+   "author": "Zakaria Leidgen",
+   "publisher": "Litura Verlag",
+   "year": "2026",
+   "isbn": "9783912786187",
+   "price": "28,99 €",
+   "link": "https://d-nb.info/1426170394",
+   "cover": "covers/9783912786187.jpg"
+  },
   {
    "title": "Saraya",
    "subtitle": "Die Prophetin der neuen Zeit",
@@ -252,17 +263,6 @@
    "price": "10,00 €",
    "link": "https://d-nb.info/1422918998",
    "cover": "covers/9783949711138.jpg"
-  },
-  {
-   "title": "Der Tinnitus-Code",
-   "subtitle": "Die 7 Schlüssel, um deinen Tinnitus zu verstehen und gezielt zu behandeln",
-   "author": "Zakaria Leidgen",
-   "publisher": "Litura Verlag",
-   "year": "2026",
-   "isbn": "9783912786170",
-   "price": "19,99 €",
-   "link": "https://d-nb.info/1422735176",
-   "cover": "covers/9783912786170.jpg"
   },
   {
    "title": "Atempause",
