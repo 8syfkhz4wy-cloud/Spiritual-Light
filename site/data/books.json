@@ -1,6 +1,39 @@
 {
- "updated": "2026-11-25T13:00:07.125Z",
+ "updated": "2026-11-26T03:45:29.045Z",
  "books": [
+  {
+   "title": "Saraya",
+   "subtitle": "Die Prophetin der neuen Zeit",
+   "author": "Eveline Ehß",
+   "publisher": "Spirit Rainbow Verlag",
+   "year": "2026",
+   "isbn": "9783911109277",
+   "price": "15,00 €",
+   "link": "https://d-nb.info/1426048459",
+   "cover": "covers/9783911109277.png"
+  },
+  {
+   "title": "Lenormand Königsklasse 2.0 – Menschen verstehen",
+   "subtitle": "Deutungen, Legesysteme und Praxiswissen für zwischenmenschliche Fragen",
+   "author": "Angelina Schulze",
+   "publisher": "Angelina Schulze Verlag",
+   "year": "2026",
+   "isbn": "9783967383393",
+   "price": "19,99 €",
+   "link": "https://d-nb.info/1425852300",
+   "cover": "covers/9783967383393.jpg"
+  },
+  {
+   "title": "EIOLO und INARDA INFORMATIONEN III Fragen & Antworten",
+   "subtitle": "Zwei Wesen vom Sternensystem der Plejaden im Gespräch mit Gerhard Praher und den Teilnehmern der Telegram-Gruppe EIOLO und INARDA",
+   "author": "Gerhard Praher",
+   "publisher": "Spica Verlag GmbH",
+   "year": "2026",
+   "isbn": "9783985033041",
+   "price": "29,90 €",
+   "link": "https://d-nb.info/1425550320",
+   "cover": "covers/9783985033041.jpg"
+  },
   {
    "title": "Voraussagen für 2027",
    "subtitle": "",
@@ -293,39 +326,6 @@
    "isbn": "9783745937374",
    "price": "",
    "link": "https://d-nb.info/1421380293"
-  },
-  {
-   "title": "Doch die Liebe bleibt – Trost für Trauernde",
-   "subtitle": "Wenn die Liebe den Tod überdauert – Hoffnung, die das Herz berührt. Liebe, die über den Tod hinaus verbindet.",
-   "author": "Hans Stolp",
-   "publisher": "Aquamarin",
-   "year": "2026",
-   "isbn": "9783894279806",
-   "price": "16,95 €",
-   "link": "https://d-nb.info/1421140195",
-   "cover": "covers/9783894279806.jpg"
-  },
-  {
-   "title": "Neuanfang mit Gott",
-   "subtitle": "Sieben Schritte in ein erfülltes Leben",
-   "author": "Birgitta Gmeiner",
-   "publisher": "Buchschmiede von Dataform Media GmbH",
-   "year": "2026",
-   "isbn": "9783992030002",
-   "price": "26,50 €",
-   "link": "https://d-nb.info/1420729284",
-   "cover": "covers/9783992030002.jpg"
-  },
-  {
-   "title": "Das Orakel aus der Natur",
-   "subtitle": "Mystische Zeichen aus Knochen, Holz und Meeresfunden",
-   "author": "Haide Zindler",
-   "publisher": "Ayon Verlag",
-   "year": "2026",
-   "isbn": "9783945470329",
-   "price": "",
-   "link": "https://d-nb.info/1420728717",
-   "cover": "covers/9783945470329.jpg"
   }
  ]
 }
