@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-26T12:39:36.956Z",
+ "updated": "2026-11-27T03:47:04.572Z",
  "books": [
   {
    "title": "Der Tinnitus-Code",
@@ -66,6 +66,16 @@
    "price": "14,00 €",
    "link": "https://d-nb.info/1425271936",
    "cover": "covers/9783947232499.png"
+  },
+  {
+   "title": "Die Weihen der Energien von Lord Sananda ®",
+   "subtitle": "Engelenergie",
+   "author": "Angelica Saerbeck",
+   "publisher": "Angelica Katja Saerbeck",
+   "year": "2026",
+   "isbn": "9798363068607",
+   "price": "",
+   "link": "https://d-nb.info/1425262066"
   },
   {
    "title": "Schumann Frequenz - Der 30-Tage-Reset: Bringen Sie Stress, Schlaf & digitale Reizflut in Balance und finden Sie mit einfachen Routinen innere Ruhe - inkl. Selbstcheck, Atemübungen, Meditationen uvm.",
@@ -316,16 +326,6 @@
    "price": "28,00 €",
    "link": "https://d-nb.info/1421461706",
    "cover": "covers/9783200114159.jpg"
-  },
-  {
-   "title": "Die Kraft des Mondes",
-   "subtitle": "nutze die Energie der Tierkreiszeichen – Rituale, Mantras, Mondwissen und vieles mehr",
-   "author": "Beate Tschirch",
-   "publisher": "EMF",
-   "year": "2026",
-   "isbn": "9783745937374",
-   "price": "",
-   "link": "https://d-nb.info/1421380293"
   }
  ]
 }
