@@ -1,6 +1,17 @@
 {
- "updated": "2026-11-28T03:30:16.882Z",
+ "updated": "2026-11-28T11:50:31.889Z",
  "books": [
+  {
+   "title": "12 Tarot-Legemuster für die magischen Rauhnächte",
+   "subtitle": "",
+   "author": "Sabine Schramm",
+   "publisher": "Schramm Media",
+   "year": "2026",
+   "isbn": "9783691740141",
+   "price": "9,90 €",
+   "link": "https://d-nb.info/1426407769",
+   "cover": "covers/9783691740141.png"
+  },
   {
    "title": "Der Tinnitus-Code",
    "subtitle": "Die 7 Schlüssel, um deinen Tinnitus zu verstehen und gezielt zu behandeln",
@@ -315,17 +326,6 @@
    "price": "14,90 €",
    "link": "https://d-nb.info/1421466767",
    "cover": "covers/9783960749226.jpg"
-  },
-  {
-   "title": "Sternenkorb",
-   "subtitle": "Endlich mit dem Herz denken und mit dem Schoß fließen.",
-   "author": "",
-   "publisher": "Claudia Nitschke",
-   "year": "2026",
-   "isbn": "9783200114159",
-   "price": "28,00 €",
-   "link": "https://d-nb.info/1421461706",
-   "cover": "covers/9783200114159.jpg"
   }
  ]
 }
